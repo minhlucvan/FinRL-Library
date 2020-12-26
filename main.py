@@ -6,7 +6,7 @@ from argparse import ArgumentParser
 import datetime
 
 from finrl.config import config
-
+from finrl.marketdata.datadowloader import get_data_downloader
 
 
 def build_parser():
@@ -36,10 +36,10 @@ def main():
         finrl.autotrain.training.train_one()
 
     elif options.mode == "download_data":
-        from finrl.marketdata.yahoodownloader import YahooDownloader
-        df = YahooDownloader(start_date = config.START_DATE,
+        DataDowloader = get_data_downloader(config.DATA_PROVIDER)
+        df = DataDowloader(start_date = config.START_DATE,
                              end_date = config.END_DATE,
-                             ticker_list = config.DOW_30_TICKER).fetch_data()
+                             ticker_list = config.TICKER_LIST).fetch_data()
         now = datetime.datetime.now().strftime('%Y%m%d-%Hh%M')
         df.to_csv("./"+config.DATA_SAVE_DIR+"/"+now+'.csv')
 

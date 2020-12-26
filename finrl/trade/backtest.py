@@ -5,9 +5,10 @@ from pyfolio import timeseries
 import pyfolio
 import matplotlib.pyplot as plt
 
-from finrl.marketdata.yahoodownloader import YahooDownloader
+from finrl.marketdata.datadowloader import get_data_downloader
 from finrl.config import config
 
+DataDowloader = get_data_downloader(config.DATA_PROVIDER)
 
 def BackTestStats(account_value):
     df = account_value.copy()
@@ -66,7 +67,7 @@ def backtest_strat(df):
 
 
 def baseline_strat(ticker, start, end):
-    dji = YahooDownloader(start_date = start,
+    dji = DataDowloader(start_date = start,
                      end_date = end,
                      ticker_list = [ticker]).fetch_data()
     dji['daily_return']=dji['close'].pct_change(1)

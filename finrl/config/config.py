@@ -16,9 +16,11 @@ import os
 #DATASET_DIR = PACKAGE_ROOT / "data"
 
 # data
-TRAINING_DATA_FILE = "data/ETF_SPY_2009_2020.csv"
-TURBULENCE_DATA = "data/dow30_turbulence_index.csv"
-TESTING_DATA_FILE = "test.csv"
+MARKET_DATA_FILE = 'datasets/market_stocks.csv'
+STOCKS_DATA_FILE = 'datasets/stocks_data.csv'
+TRAINING_DATA_FILE = "datasets/stocks_data_2009_2020.csv"
+TURBULENCE_DATA = "datasets/dow30_turbulence_index.csv"
+TESTING_DATA_FILE = "datasets/test.csv"
 
 #now = datetime.datetime.now()
 #TRAINED_MODEL_DIR = f"trained_models/{now}"
@@ -36,12 +38,17 @@ END_DATE = "2020-12-01"
 START_TRADE_DATE = "2019-01-01"
 
 ## dataset default columns
-DEFAULT_DATA_COLUMNS = ['date','tic','close']
+DEFAULT_DATA_COLUMNS = ['date','tic','close', 'open', 'high', 'low', 'volume']
 
 ## stockstats technical indicator column names
 ## check https://pypi.org/project/stockstats/ for different names
 TECHNICAL_INDICATORS_LIST = ['macd', 'rsi_30', 'cci_30', 'dx_30']
 
+ENABLED_MODELS = ['SAC']
+
+DATA_PROVIDER = 'vnd'
+
+NUMBER_OF_STOCKS = 3
 
 ## Model Parameters
 A2C_PARAMS = {'n_steps':5, 
@@ -207,6 +214,10 @@ CSI_300_TICKER = ['600000.SS', '600004.SS', '600009.SS', '600010.SS', '600011.SS
 				 '002624.SZ', '002673.SZ', '002714.SZ', '002736.SZ', '002739.SZ', '002773.SZ', '002841.SZ', '002916.SZ', '002938.SZ', '002939.SZ', 
 				 '002945.SZ', '002958.SZ', '003816.SZ', '300003.SZ', '300014.SZ', '300015.SZ', '300033.SZ', '300059.SZ', '300122.SZ', '300124.SZ', 
 				 '300136.SZ', '300142.SZ', '300144.SZ', '300347.SZ', '300408.SZ', '300413.SZ', '300433.SZ', '300498.SZ', '300601.SZ', '300628.SZ',]
+
+VN_HOSE = ['FPT', 'HPG', 'TNA'] 
+
+TICKER_LIST = VN_HOSE
 
 ############## Stock Ticker Setup ends ##############
 ########################################################

@@ -7,7 +7,7 @@ matplotlib.use('Agg')
 import datetime
 
 from finrl.config import config
-from finrl.marketdata.yahoodownloader import YahooDownloader
+from finrl.marketdata.datadowloader import get_data_downloader
 from finrl.preprocessing.preprocessors import FeatureEngineer
 from finrl.preprocessing.data import data_split
 from finrl.env.environment import EnvSetup
@@ -16,32 +16,33 @@ from finrl.env.EnvMultipleStock_trade import StockEnvTrade
 from finrl.model.models import DRLAgent
 from finrl.trade.backtest import BackTestStats
 
-
+DataDowloader = get_data_downloader(config.DATA_PROVIDER)
 
 def train_one():
     """
     train an agent
     """
     print("==============Start Fetching Data===========")
-    df = YahooDownloader(start_date = config.START_DATE,
+    df = DataDowloader(start_date = config.START_DATE,
                          end_date = config.END_DATE,
-                         ticker_list = config.DOW_30_TICKER).fetch_data()
+                         ticker_list = config.TICKER_LIST).fetch_data()
     print("==============Start Feature Engineering===========")
     df = FeatureEngineer(df,
                         use_technical_indicator=True,
                         use_turbulence=True).preprocess_data()
 
+    df.to_csv(config.TRAINING_DATA_FILE)
 
     # Training & Trade data split
     train = data_split(df, config.START_DATE,config.START_TRADE_DATE)
     trade = data_split(df, config.START_TRADE_DATE,config.END_DATE)
 
     # data normalization
-    #feaures_list = list(train.columns)
+    feaures_list = list(train.columns)
     #feaures_list.remove('date')
     #feaures_list.remove('tic')
     #feaures_list.remove('close')
-    #print(feaures_list)
+    print(feaures_list)
     #data_normaliser = preprocessing.StandardScaler()
     #train[feaures_list] = data_normaliser.fit_transform(train[feaures_list])
     #trade[feaures_list] = data_normaliser.fit_transform(trade[feaures_list])
