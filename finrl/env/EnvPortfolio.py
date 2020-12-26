@@ -61,6 +61,7 @@ class StockPortfolioEnv(gym.Env):
                 df,
                 stock_dim,
                 hmax,
+                hmin,
                 initial_amount,
                 transaction_cost_pct,
                 reward_scaling,
@@ -77,6 +78,7 @@ class StockPortfolioEnv(gym.Env):
         self.df = df
         self.stock_dim = stock_dim
         self.hmax = hmax
+        self.hmin = hmin
         self.initial_amount = initial_amount
         self.transaction_cost_pct =transaction_cost_pct
         self.reward_scaling = reward_scaling
@@ -98,6 +100,10 @@ class StockPortfolioEnv(gym.Env):
         self.turbulence_threshold = turbulence_threshold        
         # initalize state: inital portfolio return + individual stock return + individual weights
         self.portfolio_value = self.initial_amount
+
+        # initialize reward
+        self.reward = 0
+        self.cost = 0
 
         # memorize portfolio value each step
         self.asset_memory = [self.initial_amount]

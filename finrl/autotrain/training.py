@@ -53,9 +53,10 @@ def train_one():
 
     env_setup = EnvSetup(stock_dim = stock_dimension,
                          state_space = state_space,
-                         hmax = 100,
-                         initial_amount = 50000,
-                         transaction_cost_pct = 0.001)
+                         hmax = config.MAXIMUM_STOCKS_PER_COMMIT,
+                         stock_batch= config.STOCKS_PER_BATCH,
+                         initial_amount = config.INITIAL_AMMOUNT,
+                         transaction_cost_pct = config.TRANSACTION_COST_PCT)
 
     env_train = env_setup.create_env_training(data = train,
                                           env_class = StockEnvTrain)

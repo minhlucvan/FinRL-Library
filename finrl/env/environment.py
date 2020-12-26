@@ -36,6 +36,7 @@ class EnvSetup:
         stock_dim:int,
         state_space:int,
         hmax = 100,
+        hmin = 100,
         initial_amount = 1000000,
         transaction_cost_pct = 0.001,
         reward_scaling = 1e-4,
@@ -43,6 +44,7 @@ class EnvSetup:
 
         self.stock_dim = stock_dim
         self.hmax = hmax
+        self.hmin = hmin
         self.initial_amount = initial_amount
         self.transaction_cost_pct =transaction_cost_pct
         self.reward_scaling = reward_scaling
@@ -56,6 +58,7 @@ class EnvSetup:
         env_train = DummyVecEnv([lambda: env_class(df = data,
                                                     stock_dim = self.stock_dim,
                                                     hmax = self.hmax,
+                                                    hmin = self.hmin,
                                                     initial_amount = self.initial_amount,
                                                     transaction_cost_pct = self.transaction_cost_pct,
                                                     reward_scaling = self.reward_scaling,
@@ -70,6 +73,7 @@ class EnvSetup:
         env_validation = DummyVecEnv([lambda: env_class(df = data,
                                             stock_dim = self.stock_dim,
                                             hmax = self.hmax,
+                                            hmin = self.hmin,
                                             initial_amount = self.initial_amount,
                                             transaction_cost_pct = self.transaction_cost_pct,
                                             reward_scaling = self.reward_scaling,
@@ -86,6 +90,7 @@ class EnvSetup:
         env_trade = DummyVecEnv([lambda: env_class(df = data,
                                             stock_dim = self.stock_dim,
                                             hmax = self.hmax,
+                                            hmin = self.hmin,
                                             initial_amount = self.initial_amount,
                                             transaction_cost_pct = self.transaction_cost_pct,
                                             reward_scaling = self.reward_scaling,

@@ -15,6 +15,7 @@ class StockEnvTrain(gym.Env):
                 df,
                 stock_dim,
                 hmax,
+                hmin,                
                 initial_amount,
                 transaction_cost_pct,
                 reward_scaling,
@@ -29,6 +30,7 @@ class StockEnvTrain(gym.Env):
         self.df = df
         self.stock_dim = stock_dim
         self.hmax = hmax
+        self.hmin = hmin
         self.initial_amount = initial_amount
         self.transaction_cost_pct =transaction_cost_pct
         self.reward_scaling = reward_scaling
@@ -92,14 +94,13 @@ class StockEnvTrain(gym.Env):
         self.trades+=1
         
     def step(self, actions):
-        # print(self.day)
+        print('training day {}'.format(self.day))
         self.terminal = self.day >= len(self.df.index.unique())-1
-        # print(actions)
 
         if self.terminal:
-            #plt.plot(self.asset_memory,'r')
+            # plt.plot(self.asset_memory,'r')
             #plt.savefig('results/account_value_train.png')
-            #plt.close()
+            # plt.close()
             end_total_asset = self.state[0]+ \
                 sum(np.array(self.state[1:(self.stock_dim+1)])*np.array(self.state[(self.stock_dim+1):(self.stock_dim*2+1)]))
 

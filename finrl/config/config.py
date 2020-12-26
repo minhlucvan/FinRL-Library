@@ -39,13 +39,17 @@ START_TRADE_DATE = "2019-01-01"
 
 ## dataset default columns
 DEFAULT_DATA_COLUMNS = ['date','tic','close', 'open', 'high', 'low', 'volume']
+MAXIMUM_STOCKS_PER_COMMIT = 200
+STOCKS_PER_BATCH = 100
+INITIAL_AMMOUNT = 10000
+TRANSACTION_COST_PCT = 0.1
 
 ## stockstats technical indicator column names
 ## check https://pypi.org/project/stockstats/ for different names
 TECHNICAL_INDICATORS_LIST = ['macd', 'rsi_30', 'cci_30', 'dx_30']
 
 # models sac a2c ddpg td3 ppo
-ENABLED_MODEL = 'a2c'
+ENABLED_MODEL = 'sac'
 
 DATA_PROVIDER = 'vnd'
 
@@ -55,11 +59,11 @@ SAVED_MODEL = 'trained_models/SAC_20201227-02h55.zip'
 NUMBER_OF_STOCKS = 3
 
 ## Model Parameters
-A2C_PARAMS = {'n_steps':5, 
+A2C_PARAMS = {'n_steps':10, 
 			  'ent_coef':0.01, 
 			  'learning_rate':0.0007,
 			  'verbose':0,
-			  'timesteps':20000}
+			  'timesteps':50000}
 PPO_PARAMS = {'n_steps':2048, 
 			  'ent_coef':0.01, 
 			  'learning_rate':0.00025,   

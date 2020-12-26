@@ -16,7 +16,8 @@ class StockEnvTrade(gym.Env):
     def __init__(self, 
                 df, 
                 stock_dim,
-                hmax,                
+                hmax,
+                hmin,                
                 initial_amount,
                 transaction_cost_pct,
                 reward_scaling,
@@ -31,6 +32,7 @@ class StockEnvTrade(gym.Env):
         self.df = df
         self.stock_dim = stock_dim
         self.hmax = hmax
+        self.hmin = hmin
         self.initial_amount = initial_amount
         self.transaction_cost_pct =transaction_cost_pct
         self.reward_scaling = reward_scaling
@@ -132,7 +134,7 @@ class StockEnvTrade(gym.Env):
 
             print("end_total_asset:{}".format(end_total_asset))
             print(self.state)
-            print("total_reward:{}".format(self.state[0]+sum(np.array(self.state[1:(self.stock_dim+1)])*np.array(self.state[(self.stock_dim+1):61]))- self.asset_memory[0] ))
+            print("total_reward:{}".format(self.state[0]+sum(np.array(self.state[1:(self.stock_dim+1)])*np.array(self.state[(self.stock_dim+1):7]))- self.asset_memory[0] ))
             print("total_cost: ", self.cost)
             print("total trades: ", self.trades)
 
