@@ -44,9 +44,13 @@ DEFAULT_DATA_COLUMNS = ['date','tic','close', 'open', 'high', 'low', 'volume']
 ## check https://pypi.org/project/stockstats/ for different names
 TECHNICAL_INDICATORS_LIST = ['macd', 'rsi_30', 'cci_30', 'dx_30']
 
-ENABLED_MODELS = ['SAC']
+# models sac a2c ddpg td3 ppo
+ENABLED_MODEL = 'a2c'
 
 DATA_PROVIDER = 'vnd'
+
+LOAD_SAVED_MODEL = True
+SAVED_MODEL = 'trained_models/SAC_20201227-02h55.zip'
 
 NUMBER_OF_STOCKS = 3
 
@@ -74,10 +78,9 @@ TD3_PARAMS = {'batch_size': 100,
 	          'timesteps':30000}
 SAC_PARAMS = {'batch_size': 64,
 			  'buffer_size': 100000,
-			  'learning_rate': 0.0001,
-			  'learning_starts':100,
-			  'batch_size':64,
 			  'ent_coef':'auto_0.1',
+			  'learning_rate': 0.0001,
+			  'learning_starts':200,
 			  'timesteps': 50000,
 			  'verbose': 0}
 

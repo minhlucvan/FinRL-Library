@@ -54,7 +54,7 @@ def train_one():
     env_setup = EnvSetup(stock_dim = stock_dimension,
                          state_space = state_space,
                          hmax = 100,
-                         initial_amount = 1000000,
+                         initial_amount = 50000,
                          transaction_cost_pct = 0.001)
 
     env_train = env_setup.create_env_training(data = train,
@@ -62,18 +62,26 @@ def train_one():
     agent = DRLAgent(env = env_train)
 
     print("==============Model Training===========")
+    print("Using Model {}".format(config.ENABLED_MODEL))
     now = datetime.datetime.now().strftime('%Y%m%d-%Hh%M')
+    model_params_tuning=config.SAC_PARAMS
+    model = agent.train_SAC(model_name = "SAC_{}".format(now), model_params = model_params_tuning)
 
-    sac_params_tuning={
-                      'batch_size': 64,
-                     'buffer_size': 100000,
-                      'ent_coef':'auto_0.1',
-                     'learning_rate': 0.0001,
-                     'learning_starts':200,
-                     'timesteps': 50000,
-                     'verbose': 0}
-
-    model = agent.train_SAC(model_name = "SAC_{}".format(now), model_params = sac_params_tuning)
+    if config.ENABLED_MODEL == 'ppo':
+        model_params_tuning=config.PPO_PARAMS
+        model = agent.train_PPO(model_name = "PPO_{}".format(now), model_params = model_params_tuning)
+    
+    if config.ENABLED_MODEL == 'a2c':
+        model_params_tuning=config.A2C_PARAMS
+        model = agent.train_A2C(model_name = "A2C_{}".format(now), model_params = model_params_tuning)
+    
+    if config.ENABLED_MODEL == 'ddpg':
+        model_params_tuning=config.DDPG_PARAMS
+        model = agent.train_DDPG(model_name = "DDPG_{}".format(now), model_params = model_params_tuning)
+    
+    if config.ENABLED_MODEL == 'td3':
+        model_params_tuning=config.TD3_PARAMS
+        model = agent.train_TD3(model_name = "TD3_{}".format(now), model_params = model_params_tuning)
 
     print("==============Start Trading===========")
     env_trade, obs_trade = env_setup.create_env_trading(data = trade,
