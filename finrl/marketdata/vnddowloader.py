@@ -120,13 +120,17 @@ class VndDownloader:
         price_df = pd.DataFrame([])
         stocks_df = pd.read_csv(stocks_data_file)
 
-        qualified_stocks_df = stocks_df.query('listedDate <= 20090101').query('status == "listed"')
+        qualified_stocks_df = stocks_df.query('listedDate <= 20090101').query('status == "listed"').query('indexCode == "VN30"')
 
-        # selected_stocks_df = qualified_stocks_df.sample(n=self.stocks_dim).iterrows()
+        print('number of qualified stocks {}'.format(qualified_stocks_df.shape))
 
-        selected_stocks_df = config.TICKER_LIST
+        selected_stocks_tic_df = qualified_stocks_df.sample(n=self.stocks_dim)
 
-        for index, stock_code in  enumerate(selected_stocks_df):
+        selected_stocks_tic = selected_stocks_tic_df['code'].tolist()
+
+        selected_stocks_tic = config.TICKER_LIST
+
+        for index, stock_code in  enumerate(selected_stocks_tic):
             print('{}/{} load stock data {}'.format(index, qualified_stocks_df.size,  stock_code))
             stock_df = self.get_stock_price_history(stock_code)
             price_df = pd.concat([ price_df, stock_df])

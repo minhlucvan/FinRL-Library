@@ -37,12 +37,14 @@ class EnvSetup:
         state_space:int,
         hmax = 100,
         hmin = 100,
+        sample_space = 3,
+        population_space = 8,
         initial_amount = 1000000,
         transaction_cost_pct = 0.001,
         reward_scaling = 1e-4,
         tech_indicator_list = config.TECHNICAL_INDICATORS_LIST):
 
-        self.stock_dim = stock_dim
+        self.stock_dim = sample_space
         self.hmax = hmax
         self.hmin = hmin
         self.initial_amount = initial_amount
@@ -52,13 +54,17 @@ class EnvSetup:
         # account balance + close price + shares + technical indicators
         self.state_space = state_space
         self.action_space = self.stock_dim
+        self.sample_space = sample_space
+        self.population_space = population_space
 
 
-    def create_env_training(self, data, env_class, turbulence_threshold=150):
+    def create_env_training(self, data, env_class, turbulence_threshold=100):
         env_train = DummyVecEnv([lambda: env_class(df = data,
                                                     stock_dim = self.stock_dim,
                                                     hmax = self.hmax,
                                                     hmin = self.hmin,
+                                                    sample_space = self.sample_space,
+                                                    population_space = self.population_space,
                                                     initial_amount = self.initial_amount,
                                                     transaction_cost_pct = self.transaction_cost_pct,
                                                     reward_scaling = self.reward_scaling,
@@ -69,11 +75,13 @@ class EnvSetup:
         return env_train
 
 
-    def create_env_validation(self, data, env_class, turbulence_threshold=150):
+    def create_env_validation(self, data, env_class, turbulence_threshold=100):
         env_validation = DummyVecEnv([lambda: env_class(df = data,
                                             stock_dim = self.stock_dim,
                                             hmax = self.hmax,
                                             hmin = self.hmin,
+                                            sample_space = self.sample_space,
+                                            population_space = self.population_space,
                                             initial_amount = self.initial_amount,
                                             transaction_cost_pct = self.transaction_cost_pct,
                                             reward_scaling = self.reward_scaling,
@@ -86,11 +94,13 @@ class EnvSetup:
 
         return env_validation, obs_validation
 
-    def create_env_trading(self, env_class, data, turbulence_threshold=150):
+    def create_env_trading(self, env_class, data, turbulence_threshold=100):
         env_trade = DummyVecEnv([lambda: env_class(df = data,
                                             stock_dim = self.stock_dim,
                                             hmax = self.hmax,
                                             hmin = self.hmin,
+                                            sample_space = self.sample_space,
+                                            population_space = self.population_space,
                                             initial_amount = self.initial_amount,
                                             transaction_cost_pct = self.transaction_cost_pct,
                                             reward_scaling = self.reward_scaling,

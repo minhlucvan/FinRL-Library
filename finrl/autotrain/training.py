@@ -42,7 +42,8 @@ def train_one():
     #feaures_list.remove('date')
     #feaures_list.remove('tic')
     #feaures_list.remove('close')
-    print(feaures_list)
+    print('data head')
+    print(trade)
     #data_normaliser = preprocessing.StandardScaler()
     #train[feaures_list] = data_normaliser.fit_transform(train[feaures_list])
     #trade[feaures_list] = data_normaliser.fit_transform(trade[feaures_list])
@@ -52,9 +53,11 @@ def train_one():
     state_space = 1 + 2*stock_dimension + len(config.TECHNICAL_INDICATORS_LIST)*stock_dimension 
 
     env_setup = EnvSetup(stock_dim = stock_dimension,
+                         population_space = config.NUMBER_OF_STOCKS,
+                         sample_space = config.NUMBER_SAMPLE_STOCKS,
                          state_space = state_space,
                          hmax = config.MAXIMUM_STOCKS_PER_COMMIT,
-                         stock_batch= config.STOCKS_PER_BATCH,
+                         hmin= config.STOCKS_PER_BATCH,
                          initial_amount = config.INITIAL_AMMOUNT,
                          transaction_cost_pct = config.TRANSACTION_COST_PCT)
 

@@ -62,6 +62,8 @@ class StockPortfolioEnv(gym.Env):
                 stock_dim,
                 hmax,
                 hmin,
+                sample_space,
+                population_space,     
                 initial_amount,
                 transaction_cost_pct,
                 reward_scaling,
@@ -73,9 +75,14 @@ class StockPortfolioEnv(gym.Env):
                 day = 0):
         #super(StockEnv, self).__init__()
         #money = 10 , scope = 1
+        self.sample_space = sample_space
+        self.population_space = population_space
         self.day = day
         self.lookback=lookback
-        self.df = df
+        self.udf = df
+        self.df = self.udf
+        # self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True)
+        self.sample_tics = self.udf['tic'].sample(n=self.sample_space).tolist()
         self.stock_dim = stock_dim
         self.hmax = hmax
         self.hmin = hmin
@@ -93,7 +100,7 @@ class StockPortfolioEnv(gym.Env):
         self.observation_space = spaces.Box(low=0, high=np.inf, shape = (self.state_space+len(self.tech_indicator_list),self.state_space))
 
         # load data from a pandas dataframe
-        self.data = self.df.loc[self.day,:]
+        self.data = self.df.loc[self.day:]
         self.covs = self.data['cov_list'].values[0]
         self.state =  np.append(np.array(self.covs), [self.data[tech].values.tolist() for tech in self.tech_indicator_list ], axis=0)
         self.terminal = False     
@@ -158,7 +165,7 @@ class StockPortfolioEnv(gym.Env):
 
             #load next state
             self.day += 1
-            self.data = self.df.loc[self.day,:]
+            self.data = self.df.loc[self.day:]
             self.covs = self.data['cov_list'].values[0]
             self.state =  np.append(np.array(self.covs), [self.data[tech].values.tolist() for tech in self.tech_indicator_list ], axis=0)
             #print(self.state)
@@ -182,9 +189,11 @@ class StockPortfolioEnv(gym.Env):
         return self.state, self.reward, self.terminal, {}
 
     def reset(self):
+        self.sample_tics = self.udf['tic'].sample(n=self.sample_space).tolist()
+        # self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True)
         self.asset_memory = [self.initial_amount]
         self.day = 0
-        self.data = self.df.loc[self.day,:]
+        self.data = self.df.loc[self.day:]
         # load states
         self.covs = self.data['cov_list'].values[0]
         self.state =  np.append(np.array(self.covs), [self.data[tech].values.tolist() for tech in self.tech_indicator_list ], axis=0)

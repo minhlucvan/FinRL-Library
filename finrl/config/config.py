@@ -39,14 +39,14 @@ START_TRADE_DATE = "2019-01-01"
 
 ## dataset default columns
 DEFAULT_DATA_COLUMNS = ['date','tic','close', 'open', 'high', 'low', 'volume']
-MAXIMUM_STOCKS_PER_COMMIT = 200
+MAXIMUM_STOCKS_PER_COMMIT = 100
 STOCKS_PER_BATCH = 100
 INITIAL_AMMOUNT = 10000
-TRANSACTION_COST_PCT = 0.1
+TRANSACTION_COST_PCT = 0.001
 
 ## stockstats technical indicator column names
 ## check https://pypi.org/project/stockstats/ for different names
-TECHNICAL_INDICATORS_LIST = ['macd', 'rsi_30', 'cci_30', 'dx_30']
+TECHNICAL_INDICATORS_LIST = ['macd', 'rsi_30', 'cci_30', 'dx_30', 'kdjk', 'open_2_sma', 'boll', 'close_10.0_le_5_c', 'wr_10', 'dma', 'trix']
 
 # models sac a2c ddpg td3 ppo
 ENABLED_MODEL = 'sac'
@@ -57,13 +57,14 @@ LOAD_SAVED_MODEL = True
 SAVED_MODEL = 'trained_models/SAC_20201227-02h55.zip'
 
 NUMBER_OF_STOCKS = 3
+NUMBER_SAMPLE_STOCKS = 3
 
 ## Model Parameters
-A2C_PARAMS = {'n_steps':10, 
+A2C_PARAMS = {'n_steps':50, 
 			  'ent_coef':0.01, 
-			  'learning_rate':0.0007,
+			  'learning_rate':0.0001,
 			  'verbose':0,
-			  'timesteps':50000}
+			  'timesteps':100000}
 PPO_PARAMS = {'n_steps':2048, 
 			  'ent_coef':0.01, 
 			  'learning_rate':0.00025,   
@@ -222,7 +223,9 @@ CSI_300_TICKER = ['600000.SS', '600004.SS', '600009.SS', '600010.SS', '600011.SS
 				 '002945.SZ', '002958.SZ', '003816.SZ', '300003.SZ', '300014.SZ', '300015.SZ', '300033.SZ', '300059.SZ', '300122.SZ', '300124.SZ', 
 				 '300136.SZ', '300142.SZ', '300144.SZ', '300347.SZ', '300408.SZ', '300413.SZ', '300433.SZ', '300498.SZ', '300601.SZ', '300628.SZ',]
 
-VN_HOSE = ['FPT', 'HPG', 'TNA'] 
+# VN_HOSE = ['FPT', 'SBT', 'VNM', 'REE', 'HPG', 'VIC', 'SSI', 'STB']
+
+VN_HOSE = ['FPT', 'HPG', 'SSI']
 
 TICKER_LIST = VN_HOSE
 

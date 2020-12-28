@@ -15,7 +15,9 @@ class StockEnvTrain(gym.Env):
                 df,
                 stock_dim,
                 hmax,
-                hmin,                
+                hmin,          
+                sample_space,
+                population_space,         
                 initial_amount,
                 transaction_cost_pct,
                 reward_scaling,
@@ -26,8 +28,13 @@ class StockEnvTrain(gym.Env):
                 day = 0):
         #super(StockEnv, self).__init__()
         #money = 10 , scope = 1
+        self.sample_space = sample_space
+        self.population_space = population_space
         self.day = day
-        self.df = df
+        self.udf = df
+        self.sample_tics = self.udf['tic'].sample(n=self.sample_space).tolist()
+        self.df = self.udf
+        # self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True)
         self.stock_dim = stock_dim
         self.hmax = hmax
         self.hmin = hmin
@@ -44,7 +51,8 @@ class StockEnvTrain(gym.Env):
         # +[macd 1-30]+ [rsi 1-30] + [cci 1-30] + [adx 1-30]
         self.observation_space = spaces.Box(low=0, high=np.inf, shape = (self.state_space,))
         # load data from a pandas dataframe
-        self.data = self.df.loc[self.day,:]
+        self.data = self.df.loc[self.day:]
+        self.data.to_csv('debug.csv')
         self.terminal = False             
         # initalize state
         self.state = [self.initial_amount] + \
@@ -94,7 +102,7 @@ class StockEnvTrain(gym.Env):
         self.trades+=1
         
     def step(self, actions):
-        print('training day {}'.format(self.day))
+        # print('training day {}'.format(self.day))
         self.terminal = self.day >= len(self.df.index.unique())-1
 
         if self.terminal:
@@ -150,7 +158,7 @@ class StockEnvTrain(gym.Env):
                 self._buy_stock(index, actions[index])
 
             self.day += 1
-            self.data = self.df.loc[self.day,:]         
+            self.data = self.df.loc[self.day:]
             #load next state
             # print("stock_shares:{}".format(self.state[29:]))
             self.state =  [self.state[0]] + \
@@ -174,9 +182,11 @@ class StockEnvTrain(gym.Env):
         return self.state, self.reward, self.terminal, {}
 
     def reset(self):
+        self.sample_tics = self.udf['tic'].sample(n=self.sample_space).tolist()
+        # self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True)
         self.asset_memory = [self.initial_amount]
         self.day = 0
-        self.data = self.df.loc[self.day,:]
+        self.data = self.df.loc[self.day:]
         self.cost = 0
         self.trades = 0
         self.terminal = False 
