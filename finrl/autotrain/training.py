@@ -49,7 +49,8 @@ def train_one():
     #trade[feaures_list] = data_normaliser.fit_transform(trade[feaures_list])
 
     # calculate state action space
-    stock_dimension = len(train.tic.unique())
+    # stock_dimension = len(train.tic.unique())
+    stock_dimension = config.NUMBER_SAMPLE_STOCKS
     state_space = 1 + 2*stock_dimension + len(config.TECHNICAL_INDICATORS_LIST)*stock_dimension 
 
     env_setup = EnvSetup(stock_dim = stock_dimension,

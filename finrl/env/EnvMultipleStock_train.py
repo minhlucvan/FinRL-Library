@@ -52,7 +52,7 @@ class StockEnvTrain(gym.Env):
         self.observation_space = spaces.Box(low=0, high=np.inf, shape = (self.state_space,))
         # load data from a pandas dataframe
         self.data = self.df.loc[self.day,:]
-        self.data.to_csv('debug.csv')
+        # self.data.to_csv('debug.csv')
         self.terminal = False             
         # initalize state
         self.state = [self.initial_amount] + \
