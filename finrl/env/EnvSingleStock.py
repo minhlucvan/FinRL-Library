@@ -76,10 +76,8 @@ class SingleStockEnv(gym.Env):
         #money = 10 , scope = 1
         self.population_space = population_space
         self.sample_space = sample_space
-        self.udf = df
-        self.sample_tics = self.udf['tic'].sample(n=self.sample_space).tolist()
-        # self.df = self.udf
-        self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True)
+        self.df = df
+        self.sample_tics = self.df['tic'].sample(n=self.sample_space).tolist()
         self.day = day
         self.stock_dim = stock_dim
         self.hmax = hmax
@@ -97,7 +95,7 @@ class SingleStockEnv(gym.Env):
         # +[macd 1-30]+ [rsi 1-30] + [cci 1-30] + [adx 1-30]
         self.observation_space = spaces.Box(low=0, high=np.inf, shape = (self.state_space,))
         # load data from a pandas dataframe
-        self.data = self.df.loc[self.day,:]
+        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics]
         self.terminal = False     
         self.turbulence_threshold = turbulence_threshold        
         # initalize state: inital amount + close price + shares + technical indicators + other features
@@ -209,7 +207,7 @@ class SingleStockEnv(gym.Env):
                 self._buy_stock(index, actions[index])
 
             self.day += 1
-            self.data = self.df.loc[self.day,:]
+            self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics]
             #load next state
             # print("stock_shares:{}".format(self.state[29:]))
             self.state =  [self.state[0]] + \
@@ -240,11 +238,10 @@ class SingleStockEnv(gym.Env):
         return self.state, self.reward, self.terminal, {}
 
     def reset(self):
-        self.sample_tics = self.udf['tic'].sample(n=self.sample_space).tolist()
-        self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True)
+        self.sample_tics = self.df['tic'].sample(n=self.sample_space).tolist()
         self.asset_memory = [self.initial_amount]
         self.day = 0
-        self.data = self.df.loc[self.day,:]
+        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics]
         self.cost = 0
         self.trades = 0
         self.terminal = False 
