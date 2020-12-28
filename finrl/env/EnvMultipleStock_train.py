@@ -33,8 +33,8 @@ class StockEnvTrain(gym.Env):
         self.day = day
         self.udf = df
         self.sample_tics = self.udf['tic'].sample(n=self.sample_space).tolist()
-        self.df = self.udf
-        # self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True)
+        # self.df = self.udf
+        self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True)
         self.stock_dim = stock_dim
         self.hmax = hmax
         self.hmin = hmin
@@ -51,7 +51,7 @@ class StockEnvTrain(gym.Env):
         # +[macd 1-30]+ [rsi 1-30] + [cci 1-30] + [adx 1-30]
         self.observation_space = spaces.Box(low=0, high=np.inf, shape = (self.state_space,))
         # load data from a pandas dataframe
-        self.data = self.df.loc[self.day:]
+        self.data = self.df.loc[self.day,:]
         self.data.to_csv('debug.csv')
         self.terminal = False             
         # initalize state
@@ -158,7 +158,7 @@ class StockEnvTrain(gym.Env):
                 self._buy_stock(index, actions[index])
 
             self.day += 1
-            self.data = self.df.loc[self.day:]
+            self.data = self.df.loc[self.day,:]
             #load next state
             # print("stock_shares:{}".format(self.state[29:]))
             self.state =  [self.state[0]] + \
@@ -183,10 +183,10 @@ class StockEnvTrain(gym.Env):
 
     def reset(self):
         self.sample_tics = self.udf['tic'].sample(n=self.sample_space).tolist()
-        # self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True)
+        self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True)
         self.asset_memory = [self.initial_amount]
         self.day = 0
-        self.data = self.df.loc[self.day:]
+        self.data = self.df.loc[self.day,:]
         self.cost = 0
         self.trades = 0
         self.terminal = False 

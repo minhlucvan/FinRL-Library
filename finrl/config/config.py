@@ -56,15 +56,15 @@ DATA_PROVIDER = 'vnd'
 LOAD_SAVED_MODEL = True
 SAVED_MODEL = 'trained_models/SAC_20201227-02h55.zip'
 
-NUMBER_OF_STOCKS = 3
+NUMBER_OF_STOCKS = 8
 NUMBER_SAMPLE_STOCKS = 3
 
 ## Model Parameters
-A2C_PARAMS = {'n_steps':50, 
+A2C_PARAMS = {'n_steps':5, 
 			  'ent_coef':0.01, 
-			  'learning_rate':0.0001,
+			  'learning_rate':0.0000001,
 			  'verbose':0,
-			  'timesteps':100000}
+			  'timesteps':1000}
 PPO_PARAMS = {'n_steps':2048, 
 			  'ent_coef':0.01, 
 			  'learning_rate':0.00025,   
@@ -223,7 +223,7 @@ CSI_300_TICKER = ['600000.SS', '600004.SS', '600009.SS', '600010.SS', '600011.SS
 				 '002945.SZ', '002958.SZ', '003816.SZ', '300003.SZ', '300014.SZ', '300015.SZ', '300033.SZ', '300059.SZ', '300122.SZ', '300124.SZ', 
 				 '300136.SZ', '300142.SZ', '300144.SZ', '300347.SZ', '300408.SZ', '300413.SZ', '300433.SZ', '300498.SZ', '300601.SZ', '300628.SZ',]
 
-# VN_HOSE = ['FPT', 'SBT', 'VNM', 'REE', 'HPG', 'VIC', 'SSI', 'STB']
+VN_HOSE = ['FPT', 'SBT', 'VNM', 'REE', 'HPG', 'VIC', 'SSI', 'STB']
 
 VN_HOSE = ['FPT', 'HPG', 'SSI']
 

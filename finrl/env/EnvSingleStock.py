@@ -78,8 +78,8 @@ class SingleStockEnv(gym.Env):
         self.sample_space = sample_space
         self.udf = df
         self.sample_tics = self.udf['tic'].sample(n=self.sample_space).tolist()
-        self.df = self.udf
-        # self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True)
+        # self.df = self.udf
+        self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True)
         self.day = day
         self.stock_dim = stock_dim
         self.hmax = hmax
@@ -97,7 +97,7 @@ class SingleStockEnv(gym.Env):
         # +[macd 1-30]+ [rsi 1-30] + [cci 1-30] + [adx 1-30]
         self.observation_space = spaces.Box(low=0, high=np.inf, shape = (self.state_space,))
         # load data from a pandas dataframe
-        self.data = self.df.loc[self.day:]
+        self.data = self.df.loc[self.day,:]
         self.terminal = False     
         self.turbulence_threshold = turbulence_threshold        
         # initalize state: inital amount + close price + shares + technical indicators + other features
@@ -209,7 +209,7 @@ class SingleStockEnv(gym.Env):
                 self._buy_stock(index, actions[index])
 
             self.day += 1
-            self.data = self.df.loc[self.day:]
+            self.data = self.df.loc[self.day,:]
             #load next state
             # print("stock_shares:{}".format(self.state[29:]))
             self.state =  [self.state[0]] + \
@@ -241,10 +241,10 @@ class SingleStockEnv(gym.Env):
 
     def reset(self):
         self.sample_tics = self.udf['tic'].sample(n=self.sample_space).tolist()
-        # self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True)
+        self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True)
         self.asset_memory = [self.initial_amount]
         self.day = 0
-        self.data = self.df.loc[self.day:]
+        self.data = self.df.loc[self.day,:]
         self.cost = 0
         self.trades = 0
         self.terminal = False 

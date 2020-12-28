@@ -35,8 +35,8 @@ class StockEnvTrade(gym.Env):
         self.population_space = population_space
         self.udf = df
         self.sample_tics = self.udf['tic'].sample(n=self.sample_space).tolist()
-        self.df = self.udf
-        # self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True)
+        # self.df = self.udf
+        self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True)
         self.stock_dim = stock_dim
         self.hmax = hmax
         self.hmin = hmin
@@ -52,7 +52,7 @@ class StockEnvTrade(gym.Env):
         # +[macd 1-30]+ [rsi 1-30] + [cci 1-30] + [adx 1-30]
         self.observation_space = spaces.Box(low=0, high=np.inf, shape = (self.state_space,))
         # load data from a pandas dataframe
-        self.data = self.df.loc[self.day:]  
+        self.data = self.df.loc[self.day,:]  
         self.terminal = False     
         self.turbulence_threshold = turbulence_threshold
         # initalize state
@@ -182,7 +182,7 @@ class StockEnvTrade(gym.Env):
                 self._buy_stock(index, actions[index])
 
             self.day += 1
-            self.data = self.df.loc[self.day:]    
+            self.data = self.df.loc[self.day,:]    
             self.turbulence = self.data['turbulence'].values[0]
             #print(self.turbulence)
             #load next state
@@ -209,10 +209,10 @@ class StockEnvTrade(gym.Env):
 
     def reset(self):  
         self.sample_tics = self.udf['tic'].sample(n=self.sample_space).tolist()
-        # self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True).sort_values(['date','tic']).reset_index(drop=True)
+        self.df = self.udf.query('tic in ("{}")'.format('", "'.join(self.sample_tics))).sort_values(['date','tic']).reset_index(drop=True).sort_values(['date','tic']).reset_index(drop=True)
         self.asset_memory = [self.initial_amount]
         self.day = 0
-        self.data = self.df.loc[self.day:]
+        self.data = self.df.loc[self.day,:]
         self.turbulence = 0
         self.cost = 0
         self.trades = 0
