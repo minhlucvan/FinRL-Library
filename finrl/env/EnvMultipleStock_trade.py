@@ -27,13 +27,13 @@ class StockEnvTrade(gym.Env):
                 action_space,
                 tech_indicator_list,
                 turbulence_threshold,
-                day = 0, iteration=''):
+                day = 0, iteration=0):
         #super(StockEnv, self).__init__()
         #money = 10 , scope = 1
         self.day = day
         self.sample_space = sample_space
         self.population_space = population_space
-        self.df = self.df
+        self.df = df
         self.sample_tics = self.df['tic'].sample(n=self.sample_space).tolist()
         self.stock_dim = stock_dim
         self.hmax = hmax
@@ -132,7 +132,7 @@ class StockEnvTrade(gym.Env):
             plt.close()
 
             df_total_value = pd.DataFrame(self.asset_memory)
-            #df_total_value.to_csv('results/account_value_trade_{}.csv'.format(self.iteration))
+            df_total_value.to_csv('results/account_value_trade_{}.csv'.format(self.iteration))
             end_total_asset = self.state[0]+ \
             sum(np.array(self.state[1:(self.stock_dim+1)])*np.array(self.state[(self.stock_dim+1):(self.stock_dim*2+1)]))
             print("previous_total_asset:{}".format(self.asset_memory[0]))           
@@ -214,7 +214,7 @@ class StockEnvTrade(gym.Env):
         self.cost = 0
         self.trades = 0
         self.terminal = False 
-        #self.iteration=self.iteration
+        self.iteration+=1
         self.rewards_memory = []
         self.actions_memory=[]
         self.date_memory=[self.data.date.unique()[0]]

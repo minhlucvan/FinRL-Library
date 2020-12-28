@@ -25,6 +25,7 @@ class StockEnvTrain(gym.Env):
                 action_space,
                 tech_indicator_list,
                 turbulence_threshold,
+                iteration = 0,
                 day = 0):
         #super(StockEnv, self).__init__()
         #money = 10 , scope = 1
@@ -43,6 +44,7 @@ class StockEnvTrain(gym.Env):
         self.state_space = state_space
         self.action_space = action_space
         self.tech_indicator_list = tech_indicator_list
+        self.iteration = iteration
 
         # action_space normalization and shape is self.stock_dim
         self.action_space = spaces.Box(low = -1, high = 1,shape = (self.action_space,)) 
@@ -105,9 +107,9 @@ class StockEnvTrain(gym.Env):
         self.terminal = self.day >= len(self.df.index.unique())-1
 
         if self.terminal:
-            # plt.plot(self.asset_memory,'r')
-            #plt.savefig('results/account_value_train.png')
-            # plt.close()
+            plt.plot(self.asset_memory,'r')
+            plt.savefig('results/account_value_train_{}.png'.format(self.iteration))
+            plt.close()
             end_total_asset = self.state[0]+ \
                 sum(np.array(self.state[1:(self.stock_dim+1)])*np.array(self.state[(self.stock_dim+1):(self.stock_dim*2+1)]))
 
@@ -194,7 +196,7 @@ class StockEnvTrain(gym.Env):
                       self.data.close.values.tolist() + \
                       [0]*self.stock_dim + \
                       sum([self.data[tech].values.tolist() for tech in self.tech_indicator_list ], [])
-        # iteration += 1 
+        self.iteration += 1 
         return self.state
     
     def render(self, mode='human'):
