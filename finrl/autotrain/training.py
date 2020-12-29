@@ -48,11 +48,23 @@ def train_one():
     #train[feaures_list] = data_normaliser.fit_transform(train[feaures_list])
     #trade[feaures_list] = data_normaliser.fit_transform(trade[feaures_list])
 
+    print("==============Enviroiment Setup===========")
+    train_env_class = StockEnvTrain
+    trade_env_class = StockEnvTrade
+
+    if config.TRADING_POLICY == 'SINGLE_STOCK':
+        train_env_class = StockEnvTrain
+        trade_env_class = StockEnvTrade
+    
+    if config.TRADING_POLICY == 'SINGLE_PORFOLIO':
+        train_env_class = StockEnvTrain
+        trade_env_class = StockEnvTrade
+
     # calculate state action space
     # stock_dimension = len(train.tic.unique())
     stock_dimension = config.NUMBER_SAMPLE_STOCKS
     state_space = 1 + 2*stock_dimension + len(config.TECHNICAL_INDICATORS_LIST)*stock_dimension 
-
+    
     env_setup = EnvSetup(stock_dim = stock_dimension,
                          population_space = config.NUMBER_OF_STOCKS,
                          sample_space = config.NUMBER_SAMPLE_STOCKS,
@@ -63,9 +75,11 @@ def train_one():
                          transaction_cost_pct = config.TRANSACTION_COST_PCT)
 
     env_train = env_setup.create_env_training(data = train,
-                                          env_class = StockEnvTrain)
+                                          env_class = train_env_class)
     agent = DRLAgent(env = env_train)
 
+
+    
     print("==============Model Training===========")
     print("Using Model {}".format(config.ENABLED_MODEL))
     now = datetime.datetime.now().strftime('%Y%m%d-%Hh%M')
@@ -90,7 +104,7 @@ def train_one():
 
     print("==============Start Trading===========")
     env_trade, obs_trade = env_setup.create_env_trading(data = trade,
-                                         env_class = StockEnvTrade,
+                                         env_class = trade_env_class,
                                          turbulence_threshold=250) 
 
     df_account_value,df_actions = DRLAgent.DRL_prediction(model=model,
@@ -135,6 +149,18 @@ def backtest(model_name=config.SAVED_MODEL):
     #train[feaures_list] = data_normaliser.fit_transform(train[feaures_list])
     #trade[feaures_list] = data_normaliser.fit_transform(trade[feaures_list])
 
+    print("==============Enviroiment Setup===========")
+    train_env_class = StockEnvTrain
+    trade_env_class = StockEnvTrade
+
+    if config.TRADING_POLICY == 'SINGLE_STOCK':
+        train_env_class = StockEnvTrain
+        trade_env_class = StockEnvTrade
+    
+    if config.TRADING_POLICY == 'SINGLE_PORFOLIO':
+        train_env_class = StockEnvTrain
+        trade_env_class = StockEnvTrade
+
     # calculate state action space
     # stock_dimension = len(train.tic.unique())
     stock_dimension = config.NUMBER_SAMPLE_STOCKS
@@ -150,7 +176,7 @@ def backtest(model_name=config.SAVED_MODEL):
                          transaction_cost_pct = config.TRANSACTION_COST_PCT)
 
     env_train = env_setup.create_env_training(data = train,
-                                          env_class = StockEnvTrain)
+                                          env_class = train_env_class)
     agent = DRLAgent(env = env_train)
 
     print("==============Loading Model===========")
@@ -161,7 +187,7 @@ def backtest(model_name=config.SAVED_MODEL):
 
     print("==============Start Trading===========")
     env_trade, obs_trade = env_setup.create_env_trading(data = trade,
-                                         env_class = StockEnvTrade,
+                                         env_class = trade_env_class,
                                          turbulence_threshold=250) 
 
     df_account_value,df_actions = DRLAgent.DRL_prediction(model=model,

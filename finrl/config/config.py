@@ -56,13 +56,14 @@ DATA_PROVIDER = 'vnd'
 LOAD_SAVED_MODEL = True
 SAVED_MODEL = 'SAC_20201228-23h24.zip'
 
+TRADING_POLICY = 'MUTIPLE_STOCKS' # MUTIPLE_STOCKS SINGLE_STOCK SINGLE_PORFOLIO
 NUMBER_OF_STOCKS = 8
 NUMBER_SAMPLE_STOCKS = 3
 
 ## Model Parameters
 A2C_PARAMS = {'n_steps':5, 
 			  'ent_coef':0.01, 
-			  'learning_rate':0.00000001,
+			  'learning_rate':0.000000001,
 			  'verbose':0,
 			  'timesteps':1000}
 PPO_PARAMS = {'n_steps':2048, 
@@ -84,7 +85,7 @@ TD3_PARAMS = {'batch_size': 100,
 SAC_PARAMS = {'batch_size': 64,
 			  'buffer_size': 100000,
 			  'ent_coef':'auto_0.1',
-			  'learning_rate': 0.0001,
+			  'learning_rate': 0.00001,
 			  'learning_starts':200,
 			  'timesteps': 50000,
 			  'verbose': 0}

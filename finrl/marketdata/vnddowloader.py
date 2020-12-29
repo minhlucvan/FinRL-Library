@@ -66,7 +66,6 @@ class VndDownloader:
 
 
     def get_stock_price_part(self, stock_code, start_time, end_time):
-        print('------------ {} {} {}'.format(stock_code, start_time, end_time))
         params = {
             "resolution": 'D',
             "symbol": stock_code,
@@ -106,16 +105,16 @@ class VndDownloader:
         fetch_period = -1
         current_start_time = start_time
         current_end_time = start_time
-        period_length = 1000 * 60 * 60 * 24 * 365 * 3 # 3 years
+        period_length = to_timestamp('2020-01-01') - to_timestamp('2019-01-01')
 
         while current_end_time < end_time:
             fetch_period += 1
             current_start_time = current_end_time
-            current_end_time = current_start_time + period_length if end_time - current_start_time < period_length else end_time
+            current_end_time = min(current_start_time + period_length, end_time)
             period_df =  self.get_stock_price_part(stock_code, current_start_time, current_end_time)
             full_df = pd.concat([full_df, period_df])
 
-        filterled_df = full_df
+        filterled_df = full_df.drop_duplicates()
 
         return filterled_df
 
