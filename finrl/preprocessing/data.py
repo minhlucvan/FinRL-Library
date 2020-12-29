@@ -1,6 +1,7 @@
 from __future__ import division,absolute_import,print_function
 import numpy as np
 import pandas as pd
+import datetime
 
 
 def load_dataset(*, file_name: str) -> pd.DataFrame:
@@ -21,6 +22,13 @@ def data_split(df,start,end):
     data = df[(df.date >= start) & (df.date < end)]
     data=data.sort_values(['date','tic'],ignore_index=True)
     data.index = data.date.factorize()[0]
+    return data
+
+def data_filter(df, ticker_list):
+    """
+    split the dataset
+    """
+    data = df[df['tic'].isin(ticker_list)]
     return data
 
 

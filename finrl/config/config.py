@@ -43,6 +43,7 @@ MAXIMUM_STOCKS_PER_COMMIT = 100
 STOCKS_PER_BATCH = 100
 INITIAL_AMMOUNT = 10000
 TRANSACTION_COST_PCT = 0.001
+TURBULENCE_THRESHOLD=80
 
 ## stockstats technical indicator column names
 ## check https://pypi.org/project/stockstats/ for different names
@@ -54,11 +55,11 @@ ENABLED_MODEL = 'sac'
 DATA_PROVIDER = 'vnd'
 
 LOAD_SAVED_MODEL = True
-SAVED_MODEL = 'SAC_20201228-23h24.zip'
+SAVED_MODEL = 'SAC_20201230-00h51.zip'
 
 TRADING_POLICY = 'MUTIPLE_STOCKS' # MUTIPLE_STOCKS SINGLE_STOCK SINGLE_PORFOLIO
 NUMBER_OF_STOCKS = 8
-NUMBER_SAMPLE_STOCKS = 3
+NUMBER_SAMPLE_STOCKS = 1
 
 ## Model Parameters
 A2C_PARAMS = {'n_steps':5, 
@@ -85,18 +86,18 @@ TD3_PARAMS = {'batch_size': 100,
 SAC_PARAMS = {'batch_size': 64,
 			  'buffer_size': 100000,
 			  'ent_coef':'auto_0.1',
-			  'learning_rate': 0.00001,
-			  'learning_starts':200,
-			  'timesteps': 50000,
+			  'learning_rate': 0.0001,
+			  'learning_starts':5000,
+			  'timesteps': 500000,
 			  'verbose': 0}
 
 ########################################################
 ############## Stock Ticker Setup starts ##############
 BASELINE_TICKER = 'VNINDEX'
-SINGLE_TICKER =['AAPL']
+SINGLE_TICKER =['FPT']
 
 # self defined
-MULTIPLE_STOCK_TICKER = ['AAPL','MSFT','FB']
+MULTIPLE_STOCK_TICKER = ['FPT','HPG','SSI']
 
 # check https://wrds-www.wharton.upenn.edu/ for U.S. index constituents
 # Dow 30 constituents at 2019/01

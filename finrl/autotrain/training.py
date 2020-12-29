@@ -3,13 +3,13 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from sklearn import preprocessing
-matplotlib.use('Agg')
 import datetime
+import os
 
 from finrl.config import config
 from finrl.marketdata.datadowloader import get_data_downloader
 from finrl.preprocessing.preprocessors import FeatureEngineer
-from finrl.preprocessing.data import data_split
+from finrl.preprocessing.data import data_split, data_filter
 from finrl.env.environment import EnvSetup
 from finrl.env.EnvMultipleStock_train import StockEnvTrain
 from finrl.env.EnvMultipleStock_trade import StockEnvTrade
@@ -36,14 +36,14 @@ def train_one():
     # Training & Trade data split
     train = data_split(df, config.START_DATE,config.START_TRADE_DATE)
     trade = data_split(df, config.START_TRADE_DATE,config.END_DATE)
+    trade = data_filter(trade, config.MULTIPLE_STOCK_TICKER)
 
     # data normalization
     feaures_list = list(train.columns)
     #feaures_list.remove('date')
     #feaures_list.remove('tic')
     #feaures_list.remove('close')
-    print('features')
-    print(', '.join(feaures_list))
+    print('features', ', '.join(feaures_list))
     #data_normaliser = preprocessing.StandardScaler()
     #train[feaures_list] = data_normaliser.fit_transform(train[feaures_list])
     #trade[feaures_list] = data_normaliser.fit_transform(trade[feaures_list])
@@ -105,7 +105,7 @@ def train_one():
     print("==============Start Trading===========")
     env_trade, obs_trade = env_setup.create_env_trading(data = trade,
                                          env_class = trade_env_class,
-                                         turbulence_threshold=250) 
+                                         turbulence_threshold=config.TURBULENCE_THRESHOLD) 
 
     df_account_value,df_actions = DRLAgent.DRL_prediction(model=model,
                                                           test_data = trade,
@@ -123,20 +123,26 @@ def backtest(model_name=config.SAVED_MODEL):
     """
     train an agent
     """
-    print("==============Start Fetching Data===========")
-    df = DataDowloader(start_date = config.START_DATE,
-                         end_date = config.END_DATE,
-                         ticker_list = config.TICKER_LIST).fetch_data()
-    print("==============Start Feature Engineering===========")
-    df = FeatureEngineer(df,
-                        use_technical_indicator=True,
-                        use_turbulence=True).preprocess_data()
+    matplotlib.use('WebAgg')
+    if not os.path.exists(config.TRAINING_DATA_FILE):
+        print("==============Start Fetching Data===========")
+        df = DataDowloader(start_date = config.START_DATE,
+                            end_date = config.END_DATE,
+                            ticker_list = config.TICKER_LIST).fetch_data()
+        print("==============Start Feature Engineering===========")
+        df = FeatureEngineer(df,
+                            use_technical_indicator=True,
+                            use_turbulence=True).preprocess_data()
 
-    df.to_csv(config.TRAINING_DATA_FILE)
+        df.to_csv(config.TRAINING_DATA_FILE)
+    else:
+        print("==============Using Saved Data===========")
+        df = pd.read_csv(config.TRAINING_DATA_FILE)
 
     # Training & Trade data split
     train = data_split(df, config.START_DATE,config.START_TRADE_DATE)
     trade = data_split(df, config.START_TRADE_DATE,config.END_DATE)
+    trade = data_filter(trade, config.MULTIPLE_STOCK_TICKER)
 
     # data normalization
     feaures_list = list(train.columns)
@@ -188,25 +194,18 @@ def backtest(model_name=config.SAVED_MODEL):
     print("==============Start Trading===========")
     env_trade, obs_trade = env_setup.create_env_trading(data = trade,
                                          env_class = trade_env_class,
-                                         turbulence_threshold=250) 
+                                         turbulence_threshold=config.TURBULENCE_THRESHOLD) 
 
     df_account_value,df_actions = DRLAgent.DRL_prediction(model=model,
                                                           test_data = trade,
                                                           test_env = env_trade,
                                                           test_obs = obs_trade)
-    df_account_value.to_csv("./"+config.RESULTS_DIR+"/df_account_value_"+now+'.csv')
-    df_actions.to_csv("./"+config.RESULTS_DIR+"/df_actions_"+now+'.csv')
+
 
     print("==============Get Backtest Results===========")
     perf_stats_all = BackTestStats(df_account_value)
     perf_stats_all = pd.DataFrame(perf_stats_all)
     perf_stats_all.to_csv("./"+config.RESULTS_DIR+"/perf_stats_all_"+now+'.csv')
-
-    print("==============Compare to {}===========".format(config.BASELINE_TICKER))
-    BackTestPlot(df_account_value, 
-                baseline_ticker = config.BASELINE_TICKER, 
-                baseline_start = config.START_TRADE_DATE,
-                baseline_end = config.END_DATE)
 
     print("==============Get Baseline Stats===========")
     baesline_perf_stats = BaselineStats(baseline_ticker = config.BASELINE_TICKER, 
@@ -214,3 +213,19 @@ def backtest(model_name=config.SAVED_MODEL):
                                     baseline_end = config.END_DATE)
     perf_stats_baesline = pd.DataFrame(baesline_perf_stats)
     perf_stats_baesline.to_csv("./"+config.RESULTS_DIR+"/perf_stats__baesline"+now+'.csv')
+
+    print("==============Compare to {}===========".format(config.BASELINE_TICKER))
+    BackTestPlot(df_account_value, 
+                baseline_ticker = config.BASELINE_TICKER, 
+                baseline_start = config.START_TRADE_DATE,
+                baseline_end = config.END_DATE)
+
+    if config.TRADING_POLICY == 'SINGLE_STOCK' or config.TRADING_POLICY == 'SINGLE_PORTFOLIO':
+        print("==============Compare to AAPL itself buy-and-hold===========")
+        BackTestPlot(account_value=df_account_value, baseline_ticker = config.BASELINE_TICKER)
+    
+    plt.plot()
+    plt.show()
+
+    df_account_value.to_csv("./"+config.RESULTS_DIR+"/df_account_value_"+now+'.csv')
+    df_actions.to_csv("./"+config.RESULTS_DIR+"/df_actions_"+now+'.csv')

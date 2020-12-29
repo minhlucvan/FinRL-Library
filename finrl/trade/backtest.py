@@ -3,10 +3,12 @@ import numpy as np
 
 from pyfolio import timeseries 
 import pyfolio
-import matplotlib.pyplot as plt
 
 from finrl.marketdata.datadowloader import get_data_downloader
 from finrl.config import config
+
+import matplotlib.pyplot as plt
+import matplotlib
 
 DataDowloader = get_data_downloader(config.DATA_PROVIDER)
 
@@ -46,16 +48,15 @@ def BackTestPlot(account_value,
     bli, dow_strat = baseline_strat(ticker = baseline_ticker, 
                                     start = baseline_start, 
                                     end = baseline_end)
-    df['date'] = bli['date']
+    print(df)
+    print(bli)
+    # df['date'] = bli['date']
     
     DRL_strat = backtest_strat(df)
 
     with pyfolio.plotting.plotting_context(font_scale=1.1):
-        print(DRL_strat)
-        print(dow_strat)
         pyfolio.create_full_tear_sheet(returns = DRL_strat,
                                        benchmark_rets=dow_strat, set_context=False)
-
 
 def backtest_strat(df):
     strategy_ret= df.copy()
