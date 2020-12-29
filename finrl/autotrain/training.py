@@ -30,7 +30,7 @@ def train_one():
     df = FeatureEngineer(df,
                         use_technical_indicator=config.USE_TECHNICAL_INDICATOR,
                         user_defined_feature=config.USER_DEFINED_FEATURE,
-                        use_turbulence=conf.USE_TURBULENCE).preprocess_data()
+                        use_turbulence=config.USE_TURBULENCE).preprocess_data()
 
     df.to_csv(config.TRAINING_DATA_FILE)
 
@@ -134,7 +134,7 @@ def backtest(model_name=config.SAVED_MODEL):
         df = FeatureEngineer(df,
                         use_technical_indicator=config.USE_TECHNICAL_INDICATOR,
                         user_defined_feature=config.USER_DEFINED_FEATURE,
-                        use_turbulence=conf.USE_TURBULENCE).preprocess_data()
+                        use_turbulence=config.USE_TURBULENCE).preprocess_data()
 
         df.to_csv(config.TRAINING_DATA_FILE)
     else:
