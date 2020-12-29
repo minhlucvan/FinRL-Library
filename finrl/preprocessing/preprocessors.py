@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+from ta import add_all_ta_features
+from ta.utils import dropna
 from stockstats import StockDataFrame as Sdf
 from finrl.config import config
 
@@ -84,20 +86,10 @@ class FeatureEngineer:
         :return: (df) pandas dataframe
         """
         df = data.copy()
-        stock = Sdf.retype(df.copy())
-        unique_ticker = stock.tic.unique()
-
-        for indicator in self.tech_indicator_list:
-            indicator_df = pd.DataFrame()
-            for i in range(len(unique_ticker)):
-                try:
-                    temp_indicator = stock[stock.tic == unique_ticker[i]][indicator]
-                    temp_indicator= pd.DataFrame(temp_indicator)
-                    indicator_df = indicator_df.append(temp_indicator, ignore_index=True)
-                except Exception as e:
-                    print(e)
-            df[indicator] = indicator_df
-        return df
+        df = dropna(df)
+        full_indicators_df = add_all_ta_features(df, open="open", high="high", low="low", close="close", volume="volume")
+        selected_indicators_df = full_indicators_df[self.tech_indicator_list]
+        return selected_indicators_df
 
     def add_user_defined_feature(self, data):
         """
