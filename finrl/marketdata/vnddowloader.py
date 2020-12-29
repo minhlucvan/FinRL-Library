@@ -129,10 +129,10 @@ class VndDownloader:
 
         if not self.ticker_list:
             selected_stocks_tic_df = qualified_stocks_df.sample(n=self.stocks_dim)
+            selected_stocks_tic = selected_stocks_tic_df['code'].tolist()
         else:
             selected_stocks_tic = self.ticker_list
         
-        selected_stocks_tic = selected_stocks_tic_df['code'].tolist()
     
         print('qualified stocks ({}) {}'.format(len(selected_stocks_tic), ', '.join(selected_stocks_tic)))
         
