@@ -98,7 +98,7 @@ class StockPortfolioEnv(gym.Env):
         self.observation_space = spaces.Box(low=0, high=np.inf, shape = (self.state_space+len(self.tech_indicator_list),self.state_space))
 
         # load data from a pandas dataframe
-        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics]
+        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
         self.covs = self.data['cov_list'].values[0]
         self.state =  np.append(np.array(self.covs), [self.data[tech].values.tolist() for tech in self.tech_indicator_list ], axis=0)
         self.terminal = False     
@@ -163,7 +163,7 @@ class StockPortfolioEnv(gym.Env):
 
             #load next state
             self.day += 1
-            self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics]
+            self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
             self.covs = self.data['cov_list'].values[0]
             self.state =  np.append(np.array(self.covs), [self.data[tech].values.tolist() for tech in self.tech_indicator_list ], axis=0)
             #print(self.state)
@@ -190,7 +190,7 @@ class StockPortfolioEnv(gym.Env):
         self.sample_tics = self.df['tic'].sample(n=self.sample_space).tolist()
         self.asset_memory = [self.initial_amount]
         self.day = 0
-        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics]
+        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
         # load states
         self.covs = self.data['cov_list'].values[0]
         self.state =  np.append(np.array(self.covs), [self.data[tech].values.tolist() for tech in self.tech_indicator_list ], axis=0)

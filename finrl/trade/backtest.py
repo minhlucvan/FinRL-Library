@@ -21,11 +21,11 @@ def BackTestStats(account_value):
     print(perf_stats_all)
     return perf_stats_all
 
-def BaselineStats(baseline_ticker = '^DJI', 
+def BaselineStats(baseline_ticker = config.BASELINE_TICKER, 
                   baseline_start = config.START_TRADE_DATE, 
                   baseline_end = config.END_DATE):
 
-    dji, dow_strat = baseline_strat(ticker = baseline_ticker, 
+    bli, dow_strat = baseline_strat(ticker = baseline_ticker, 
                                     start = baseline_start, 
                                     end = baseline_end)
     perf_func = timeseries.perf_stats 
@@ -38,20 +38,21 @@ def BaselineStats(baseline_ticker = '^DJI',
 def BackTestPlot(account_value, 
                  baseline_start = config.START_TRADE_DATE, 
                  baseline_end = config.END_DATE, 
-                 baseline_ticker = '^DJI'):
+                 baseline_ticker = config.BASELINE_TICKER):
 
     df = account_value.copy()
     df = get_daily_return(df)
 
-    dji, dow_strat = baseline_strat(ticker = baseline_ticker, 
+    bli, dow_strat = baseline_strat(ticker = baseline_ticker, 
                                     start = baseline_start, 
                                     end = baseline_end)
-    df['date'] = dji['date']
-    df=df.dropna()
+    df['date'] = bli['date']
     
     DRL_strat = backtest_strat(df)
 
     with pyfolio.plotting.plotting_context(font_scale=1.1):
+        print(DRL_strat)
+        print(dow_strat)
         pyfolio.create_full_tear_sheet(returns = DRL_strat,
                                        benchmark_rets=dow_strat, set_context=False)
 
@@ -63,16 +64,17 @@ def backtest_strat(df):
     strategy_ret.index = strategy_ret.index.tz_localize('UTC')
     del strategy_ret['date']
     ts = pd.Series(strategy_ret['daily_return'].values, index=strategy_ret.index)
-    return ts
+    ts = ts.dropna()
+    return ts.head(n=479)
 
 
 def baseline_strat(ticker, start, end):
-    dji = DataDowloader(start_date = start,
+    bli = DataDowloader(start_date = start,
                      end_date = end,
                      ticker_list = [ticker]).fetch_data()
-    dji['daily_return']=dji['close'].pct_change(1)
-    dow_strat = backtest_strat(dji)
-    return dji, dow_strat
+    bli['daily_return']=bli['close'].pct_change(1)
+    dow_strat = backtest_strat(bli)
+    return bli, dow_strat
 
 def get_daily_return(df):
     df['daily_return']=df.account_value.pct_change(1)

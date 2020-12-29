@@ -30,6 +30,9 @@ def main():
     if not os.path.exists("./" + config.RESULTS_DIR):
         os.makedirs("./" + config.RESULTS_DIR)
 
+    if options.mode == "backtest":
+        import finrl.autotrain.training
+        finrl.autotrain.training.backtest()
 
     if options.mode == "train":
         import finrl.autotrain.training

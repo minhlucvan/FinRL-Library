@@ -50,7 +50,7 @@ class StockEnvTrade(gym.Env):
         # +[macd 1-30]+ [rsi 1-30] + [cci 1-30] + [adx 1-30]
         self.observation_space = spaces.Box(low=0, high=np.inf, shape = (self.state_space,))
         # load data from a pandas dataframe
-        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics]
+        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
         self.terminal = False     
         self.turbulence_threshold = turbulence_threshold
         # initalize state
@@ -180,7 +180,7 @@ class StockEnvTrade(gym.Env):
                 self._buy_stock(index, actions[index])
 
             self.day += 1
-            self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics]
+            self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
             self.turbulence = self.data['turbulence'].values[0]
             #print(self.turbulence)
             #load next state
@@ -209,7 +209,7 @@ class StockEnvTrade(gym.Env):
         self.sample_tics = self.df['tic'].sample(n=self.sample_space).tolist()
         self.asset_memory = [self.initial_amount]
         self.day = 0
-        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics]
+        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
         self.turbulence = 0
         self.cost = 0
         self.trades = 0
@@ -246,7 +246,7 @@ class StockEnvTrade(gym.Env):
         
         action_list = self.actions_memory
         df_actions = pd.DataFrame(action_list)
-        df_actions.columns = self.data.tic.values
+        df_actions.columns = self.data['tic'].values
         df_actions.index = df_date.date
         #df_actions = pd.DataFrame({'date':date_list,'actions':action_list})
         return df_actions

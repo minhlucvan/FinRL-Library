@@ -52,7 +52,7 @@ class StockEnvTrain(gym.Env):
         # +[macd 1-30]+ [rsi 1-30] + [cci 1-30] + [adx 1-30]
         self.observation_space = spaces.Box(low=0, high=np.inf, shape = (self.state_space,))
         # load data from a pandas dataframe
-        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics]
+        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
         # self.data.to_csv('debug.csv')
         self.terminal = False             
         # initalize state
@@ -113,6 +113,7 @@ class StockEnvTrain(gym.Env):
             end_total_asset = self.state[0]+ \
                 sum(np.array(self.state[1:(self.stock_dim+1)])*np.array(self.state[(self.stock_dim+1):(self.stock_dim*2+1)]))
 
+            print("iteration result :{}".format(self.iteration))  
             print("begin_total_asset:{}".format(self.asset_memory[0]))           
             print("end_total_asset:{}".format(end_total_asset))
             df_total_value = pd.DataFrame(self.asset_memory)
@@ -159,7 +160,7 @@ class StockEnvTrain(gym.Env):
                 self._buy_stock(index, actions[index])
 
             self.day += 1
-            self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics]
+            self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
             #load next state
             # print("stock_shares:{}".format(self.state[29:]))
             self.state =  [self.state[0]] + \
@@ -186,7 +187,7 @@ class StockEnvTrain(gym.Env):
         self.sample_tics = self.df['tic'].sample(n=self.sample_space).tolist()
         self.asset_memory = [self.initial_amount]
         self.day = 0
-        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics]
+        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
         self.cost = 0
         self.trades = 0
         self.terminal = False 

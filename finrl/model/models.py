@@ -119,6 +119,27 @@ class DRLAgent:
         print('Training time (DDPG): ', (end-start)/60,' minutes')
         return model
 
+    def load_SAC(self, model_name, model_params = config.SAC_PARAMS):
+        """TD3 model"""
+        from stable_baselines3 import SAC
+        from stable_baselines3.sac import MlpPolicy
+
+        env_train = self.env
+
+        model = SAC('MlpPolicy', env_train,
+                    batch_size=model_params['batch_size'],
+                    buffer_size=model_params['buffer_size'],
+                    learning_rate = model_params['learning_rate'],
+                    learning_starts=model_params['learning_starts'],
+                    ent_coef=model_params['ent_coef'],
+                    verbose=model_params['verbose'],
+                    tensorboard_log = f"{config.TENSORBOARD_LOG_DIR}/{model_name}"
+                    )
+
+        model.load(path=f"{config.TRAINED_MODEL_DIR}/{model_name}")
+        print('Loaded model (SAC): {}'.format(model_name))
+        return model
+
     def train_SAC(self, model_name, model_params = config.SAC_PARAMS):
         """TD3 model"""
         from stable_baselines3 import SAC

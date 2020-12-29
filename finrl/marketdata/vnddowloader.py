@@ -3,10 +3,11 @@ import requests
 import os 
 import datetime
 import time
+from dateutil.relativedelta import relativedelta
 import finrl.config.config as config
 
 def to_timestamp(date_str):
-    timestanp = int(time.mktime(datetime.datetime.strptime(date_str, "%d/%m/%Y").timetuple()))
+    timestanp = int(time.mktime(datetime.datetime.strptime(date_str, "%Y-%m-%d").timetuple()))
     return timestanp
 
 def to_date_str(timestamp):
@@ -64,9 +65,7 @@ class VndDownloader:
         print('saved stocks data to {}'.format(stocks_data_file))
 
 
-    def get_stock_price_part(self, stock_code, start_date, end_date):
-        start_time = to_timestamp(start_date)
-        end_time = to_timestamp(end_date)
+    def get_stock_price_part(self, stock_code, start_time, end_time):
         params = {
             "resolution": 'D',
             "symbol": stock_code,
@@ -74,8 +73,6 @@ class VndDownloader:
             "to": end_time
         }
         url = 'https://dchart-api.vndirect.com.vn/dchart/history'
-
-        print('retreving price history for {} period {} - {}'.format(stock_code, start_date, end_date))
         response = requests.get(url=url, params=params)
         data = response.json()
 
@@ -102,18 +99,24 @@ class VndDownloader:
         return df
 
     def get_stock_price_history(self, stock_code):
-        periods = [
-            ('01/01/2009', '31/12/2012'),
-            ('01/01/2013', '31/12/2018'),
-            ('01/01/2019', '01/12/2020')
-        ]
         full_df = pd.DataFrame([])
-        for period in periods:
-            start_date, end_date = period
-            period_df =  self.get_stock_price_part(stock_code, start_date, end_date)
+        start_time = to_timestamp(self.start_date)
+        end_time = to_timestamp(self.end_date)
+        fetch_period = -1
+        current_start_time = start_time
+        current_end_time = start_time
+        period_length = 1000 * 60 * 60 * 24 * 365 * 3 # 3 years
+
+        while current_end_time < end_time:
+            fetch_period += 1
+            current_start_time = current_end_time
+            current_end_time = current_start_time + period_length if end_time - current_start_time > period_length else end_time
+            period_df =  self.get_stock_price_part(stock_code, current_start_time, current_end_time)
             full_df = pd.concat([full_df, period_df])
 
-        return full_df
+        filterled_df = full_df
+
+        return filterled_df
 
     def load_trading_data(self, stocks_data_file, training_data_file):
         print('load stocks data from {}'.format(stocks_data_file))
@@ -128,10 +131,10 @@ class VndDownloader:
 
         selected_stocks_tic = selected_stocks_tic_df['code'].tolist()
 
-        selected_stocks_tic = config.TICKER_LIST
+        selected_stocks_tic = self.ticker_list
 
         for index, stock_code in  enumerate(selected_stocks_tic):
-            print('{}/{} load stock data {}'.format(index, qualified_stocks_df.size,  stock_code))
+            print('{}/{} load stock data {}'.format(index, len(qualified_stocks_df.index),  stock_code))
             stock_df = self.get_stock_price_history(stock_code)
             price_df = pd.concat([ price_df, stock_df])
 

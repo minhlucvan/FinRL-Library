@@ -54,7 +54,7 @@ ENABLED_MODEL = 'sac'
 DATA_PROVIDER = 'vnd'
 
 LOAD_SAVED_MODEL = True
-SAVED_MODEL = 'trained_models/SAC_20201227-02h55.zip'
+SAVED_MODEL = 'SAC_20201228-23h24.zip'
 
 NUMBER_OF_STOCKS = 8
 NUMBER_SAMPLE_STOCKS = 3
@@ -91,6 +91,7 @@ SAC_PARAMS = {'batch_size': 64,
 
 ########################################################
 ############## Stock Ticker Setup starts ##############
+BASELINE_TICKER = 'VNINDEX'
 SINGLE_TICKER =['AAPL']
 
 # self defined
