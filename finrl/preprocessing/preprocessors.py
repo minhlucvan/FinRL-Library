@@ -87,9 +87,18 @@ class FeatureEngineer:
         """
         df = data.copy()
         df = dropna(df)
-        full_indicators_df = add_all_ta_features(df, open="open", high="high", low="low", close="close", volume="volume")
-        selected_indicators_df = full_indicators_df[self.tech_indicator_list]
-        return selected_indicators_df
+        df.set_index('tic')
+        tickers = df.tic.unique()
+        full_indicators_df = pd.DataFrame([])
+
+        for ticker in tickers:
+            ticker_df =  df[df.tic == ticker]
+            ticker_indicators_df = add_all_ta_features(ticker_df, open="open", high="high", low="low", close="close", volume="volume", fillna=True)
+            full_indicators_df = pd.concat([full_indicators_df, ticker_indicators_df])
+
+        full_indicators_df = full_indicators_df.sort_values(['date','tic']).reset_index(drop=True)
+        
+        return full_indicators_df
 
     def add_user_defined_feature(self, data):
         """
