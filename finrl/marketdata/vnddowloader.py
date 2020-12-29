@@ -66,6 +66,7 @@ class VndDownloader:
 
 
     def get_stock_price_part(self, stock_code, start_time, end_time):
+        print('------------ {} {} {}'.format(stock_code, start_time, end_time))
         params = {
             "resolution": 'D',
             "symbol": stock_code,
@@ -110,7 +111,7 @@ class VndDownloader:
         while current_end_time < end_time:
             fetch_period += 1
             current_start_time = current_end_time
-            current_end_time = current_start_time + period_length if end_time - current_start_time > period_length else end_time
+            current_end_time = current_start_time + period_length if end_time - current_start_time < period_length else end_time
             period_df =  self.get_stock_price_part(stock_code, current_start_time, current_end_time)
             full_df = pd.concat([full_df, period_df])
 

@@ -62,7 +62,7 @@ NUMBER_SAMPLE_STOCKS = 3
 ## Model Parameters
 A2C_PARAMS = {'n_steps':5, 
 			  'ent_coef':0.01, 
-			  'learning_rate':0.000001,
+			  'learning_rate':0.00000001,
 			  'verbose':0,
 			  'timesteps':1000}
 PPO_PARAMS = {'n_steps':2048, 
