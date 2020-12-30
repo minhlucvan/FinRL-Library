@@ -59,7 +59,7 @@ class FeatureEngineer:
         df = self.df.copy()
 
         print("Droping missing values")
-        df = self.drop_missing_values()
+        df = self.drop_missing_values(df)
 
         # add technical indicators
         # stockstats require all 5 columns
