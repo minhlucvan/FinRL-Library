@@ -58,7 +58,7 @@ LOAD_SAVED_MODEL = True
 SAVED_MODEL = 'SAC_20201230-00h51.zip'
 
 TRADING_POLICY = 'SINGLE_STOCK' # MUTIPLE_STOCKS SINGLE_STOCK SINGLE_PORFOLIO
-NUMBER_OF_STOCKS = 8
+NUMBER_OF_STOCKS = 30
 NUMBER_SAMPLE_STOCKS = 1
 
 ## Model Parameters
@@ -230,7 +230,7 @@ VN_HOSE = ['FPT', 'SBT', 'VNM', 'REE', 'HPG', 'VIC', 'SSI', 'STB']
 
 # VN_HOSE = ['FPT', 'HPG', 'SSI']
 
-TICKER_LIST = VN_HOSE
+TICKER_LIST = None
 
 ############## Stock Ticker Setup ends ##############
 ########################################################

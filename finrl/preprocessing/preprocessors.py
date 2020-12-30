@@ -34,11 +34,13 @@ class FeatureEngineer:
     def __init__(self, 
         df,
         use_technical_indicator=True,
+        stocks_dim = config.NUMBER_OF_STOCKS,
         tech_indicator_list = config.TECHNICAL_INDICATORS_LIST,
         use_turbulence=False,
         user_defined_feature=False):
 
         self.df = df
+        self.stocks_dim = stocks_dim
         self.use_technical_indicator = use_technical_indicator
         self.tech_indicator_list = tech_indicator_list
         self.use_turbulence=use_turbulence
@@ -56,28 +58,45 @@ class FeatureEngineer:
         """
         df = self.df.copy()
 
+        print("Droping missing values")
+        df = self.drop_missing_values()
+
         # add technical indicators
         # stockstats require all 5 columns
         if (self.use_technical_indicator==True):
             # add technical indicators using stockstats
+            print("Adding technical indicators")
             df=self.add_technical_indicator(df)
-            print("Successfully added technical indicators")
 
         # add turbulence index for multiple stock
         if self.use_turbulence==True:
+            print("Adding turbulence index")
             df = self.add_turbulence(df)
-            print("Successfully added turbulence index")
 
         # add user defined feature
         if self.user_defined_feature == True:
+            print("Adding user defined features")
             df = self.add_user_defined_feature(df)
-            print("Successfully added user defined features")
 
        
         # fill the missing values at the beginning and the end
+        print("Filling na values")
         df=df.fillna(method='bfill').fillna(method="ffill")
         return df
 
+    def drop_missing_values(self, data):
+        df = data.copy()
+        dates = df.date.unique()
+        df = df.set_index('date')
+        data_df = pd.DataFrame([])
+
+        for date in dates:
+            date_df = ticker_df =  df.loc[date,:]
+            if date_df.count() == self.stocks_dim:
+                data_df = pd.concat([data_df, date_df])
+        
+        data_df = data_df.sort_values(['date','tic']).reset_index(drop=False)
+        return data_df
 
     def add_technical_indicator(self, data):
         """
