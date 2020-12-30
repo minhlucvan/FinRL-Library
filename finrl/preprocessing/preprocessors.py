@@ -5,6 +5,7 @@ from ta.utils import dropna
 from stockstats import StockDataFrame as Sdf
 from finrl.config import config
 
+pd.options.mode.chained_assignment = None
 
 class FeatureEngineer:
     """Provides methods for preprocessing the stock price data
@@ -86,18 +87,19 @@ class FeatureEngineer:
         :return: (df) pandas dataframe
         """
         df = data.copy()
-        df = dropna(df)
-        df.set_index('tic')
+        df = df.fillna(0.0)
         tickers = df.tic.unique()
+        df = df.set_index('tic')
         full_indicators_df = pd.DataFrame([])
 
+
         for ticker in tickers:
-            ticker_df =  df[df.tic == ticker]
+            ticker_df =  df.loc[ticker,:]
             ticker_indicators_df = add_all_ta_features(ticker_df, open="open", high="high", low="low", close="close", volume="volume", fillna=True)
             full_indicators_df = pd.concat([full_indicators_df, ticker_indicators_df])
 
-        full_indicators_df = full_indicators_df.sort_values(['date','tic']).reset_index(drop=True)
-        
+        full_indicators_df = full_indicators_df.sort_values(['date','tic']).reset_index(drop=False)
+
         return full_indicators_df
 
     def add_user_defined_feature(self, data):

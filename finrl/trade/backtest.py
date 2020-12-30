@@ -65,7 +65,7 @@ def backtest_strat(df):
     strategy_ret.index = strategy_ret.index.tz_localize('UTC')
     del strategy_ret['date']
     ts = pd.Series(strategy_ret['daily_return'].values, index=strategy_ret.index)
-    ts = ts.dropna()
+    ts = ts.fillna(0.0)
     return ts.head(n=479)
 
 
@@ -79,7 +79,7 @@ def baseline_strat(ticker, start, end):
 
 def get_daily_return(df):
     df['daily_return']=df.account_value.pct_change(1)
-    #df=df.dropna()
+    df=df.fillna(0.0)
     sharpe = (252**0.5)*df['daily_return'].mean()/ \
     df['daily_return'].std()
     

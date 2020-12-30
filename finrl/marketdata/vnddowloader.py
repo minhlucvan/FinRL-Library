@@ -93,7 +93,7 @@ class VndDownloader:
         df['volume'] = df['volume'].astype(int)
 
         # drop missing data 
-        df = df.dropna()
+        df = df.fillna(0.0)
         df = df.reset_index(drop=True)
 
         return df
