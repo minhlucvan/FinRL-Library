@@ -34,12 +34,14 @@ class FeatureEngineer:
     def __init__(self, 
         df,
         use_technical_indicator=True,
+        trading_type = config.TRADING_POLICY,
         stocks_dim = config.NUMBER_OF_STOCKS,
         tech_indicator_list = config.TECHNICAL_INDICATORS_LIST,
         use_turbulence=False,
         user_defined_feature=False):
 
         self.df = df
+        self.trading_type = trading_type
         self.stocks_dim = stocks_dim
         self.use_technical_indicator = use_technical_indicator
         self.tech_indicator_list = tech_indicator_list
@@ -82,6 +84,11 @@ class FeatureEngineer:
         # fill the missing values at the beginning and the end
         print("Filling na values")
         df=df.fillna(method='bfill').fillna(method="ffill")
+
+        if self.trading_type == 'SINGLE_PORFOLIO':
+            print('Add covariance matrix as states')
+            df = self.add_covariance_values(df)
+
         return df
 
     def drop_missing_values(self, data):
@@ -91,12 +98,33 @@ class FeatureEngineer:
         data_df = pd.DataFrame([])
 
         for date in dates:
-            date_df = ticker_df =  df.loc[date,:]
-            if date_df.count() == self.stocks_dim:
+            date_df = df.loc[date,:]
+            if len(date_df.index) == self.stocks_dim:
                 data_df = pd.concat([data_df, date_df])
         
         data_df = data_df.sort_values(['date','tic']).reset_index(drop=False)
         return data_df
+
+    ## Add covariance matrix as states
+    def add_covariance_values(self, data):
+        df = data.copy()
+        df=df.sort_values(['date','tic'],ignore_index=True)
+        df.index = df.date.factorize()[0]
+
+        cov_list = []
+        # look back is one year
+        lookback=252
+        for i in range(lookback,len(df.index.unique())):
+            data_lookback = df.loc[i-lookback:i,:]
+            price_lookback=data_lookback.pivot_table(index = 'date',columns = 'tic', values = 'close')
+            return_lookback = price_lookback.pct_change().dropna()
+            covs = return_lookback.cov().values 
+            cov_list.append(covs)
+  
+        df_cov = pd.DataFrame({'date':df.date.unique()[lookback:],'cov_list':cov_list})
+        df = df.merge(df_cov, on='date')
+        df = df.sort_values(['date','tic']).reset_index(drop=True)
+        return df
 
     def add_technical_indicator(self, data):
         """

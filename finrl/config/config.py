@@ -57,9 +57,9 @@ DATA_PROVIDER = 'vnd'
 LOAD_SAVED_MODEL = True
 SAVED_MODEL = 'SAC_20201230-00h51.zip'
 
-TRADING_POLICY = 'SINGLE_STOCK' # MUTIPLE_STOCKS SINGLE_STOCK SINGLE_PORFOLIO
-NUMBER_OF_STOCKS = 30
-NUMBER_SAMPLE_STOCKS = 1
+TRADING_POLICY = 'SINGLE_PORFOLIO' # MUTIPLE_STOCKS SINGLE_STOCK SINGLE_PORFOLIO
+NUMBER_OF_STOCKS = 3
+NUMBER_SAMPLE_STOCKS = 3
 
 ## Model Parameters
 A2C_PARAMS = {'n_steps':5, 
@@ -88,7 +88,7 @@ SAC_PARAMS = {'batch_size': 64,
 			  'ent_coef':'auto_0.1',
 			  'learning_rate': 0.0001,
 			  'learning_starts':5000,
-			  'timesteps': 500000,
+			  'timesteps': 50000,
 			  'verbose': 0}
 
 ########################################################
@@ -226,11 +226,11 @@ CSI_300_TICKER = ['600000.SS', '600004.SS', '600009.SS', '600010.SS', '600011.SS
 				 '002945.SZ', '002958.SZ', '003816.SZ', '300003.SZ', '300014.SZ', '300015.SZ', '300033.SZ', '300059.SZ', '300122.SZ', '300124.SZ', 
 				 '300136.SZ', '300142.SZ', '300144.SZ', '300347.SZ', '300408.SZ', '300413.SZ', '300433.SZ', '300498.SZ', '300601.SZ', '300628.SZ',]
 
-VN_HOSE = ['FPT', 'SBT', 'VNM', 'REE', 'HPG', 'VIC', 'SSI', 'STB']
+# VN_HOSE = ['FPT', 'SBT', 'VNM', 'REE', 'HPG', 'VIC', 'SSI', 'STB']
 
-# VN_HOSE = ['FPT', 'HPG', 'SSI']
+VN_HOSE = ['FPT', 'HPG', 'SSI']
 
-TICKER_LIST = None
+TICKER_LIST = VN_HOSE
 
 ############## Stock Ticker Setup ends ##############
 ########################################################
