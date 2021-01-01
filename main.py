@@ -31,8 +31,8 @@ def main():
         os.makedirs("./" + config.RESULTS_DIR)
 
     if options.mode == "backtest":
-        import finrl.autotrain.training
-        finrl.autotrain.training.backtest()
+        import finrl.autotrain.backtesting
+        finrl.autotrain.backtesting.backtest()
 
     if options.mode == "train":
         import finrl.autotrain.training

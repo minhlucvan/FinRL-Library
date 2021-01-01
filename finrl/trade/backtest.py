@@ -9,8 +9,15 @@ from finrl.config import config
 
 import matplotlib.pyplot as plt
 import matplotlib
+from backtesting import Backtest, Strategy
+
 
 DataDowloader = get_data_downloader(config.DATA_PROVIDER)
+
+def BacktestResults(states, strategy):
+    bt = Backtest(states, strategy, cash=config.INITIAL_AMMOUNT, commission=config.TRANSACTION_COST_PCT)
+    stats = bt.run()
+    print(stats)
 
 def BackTestStats(account_value):
     df = account_value.copy()
@@ -48,8 +55,6 @@ def BackTestPlot(account_value,
     bli, dow_strat = baseline_strat(ticker = baseline_ticker, 
                                     start = baseline_start, 
                                     end = baseline_end)
-    print(df)
-    print(bli)
     # df['date'] = bli['date']
     
     DRL_strat = backtest_strat(df)

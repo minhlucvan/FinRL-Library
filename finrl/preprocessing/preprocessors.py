@@ -61,7 +61,10 @@ class FeatureEngineer:
         df = self.df.copy()
 
         print("Droping missing values")
-        df = self.drop_missing_values(df)
+        if config.TRADING_POLICY == 'MUTIPLE_STOCKS':
+            df = self.drop_missing_values(df)
+        else:
+            df = df.dropna()
 
         # add technical indicators
         # stockstats require all 5 columns
@@ -101,7 +104,7 @@ class FeatureEngineer:
             date_df = df.loc[date,:]
             if len(date_df.index) == self.stocks_dim:
                 data_df = pd.concat([data_df, date_df])
-        
+
         data_df = data_df.sort_values(['date','tic']).reset_index(drop=False)
         return data_df
 
