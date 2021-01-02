@@ -95,7 +95,7 @@ class SingleStockEnv(gym.Env):
         # +[macd 1-30]+ [rsi 1-30] + [cci 1-30] + [adx 1-30]
         self.observation_space = spaces.Box(low=0, high=np.inf, shape = (self.state_space,))
         # load data from a pandas dataframe
-        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
+        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index() if self.sample_space > 1 else self.df.loc[self.day,:]
         self.terminal = False     
         self.turbulence_threshold = turbulence_threshold        
         # initalize state: inital amount + close price + shares + technical indicators + other features
@@ -167,14 +167,13 @@ class SingleStockEnv(gym.Env):
             print("end_total_asset:{}".format(end_total_asset))
             df_total_value = pd.DataFrame(self.asset_memory)
             #df_total_value.to_csv('results/account_value_train.csv')
-            print("total_reward:{}".format(self.state[0]+sum(np.array(self.state[1:(self.stock_dim+1)])*np.array(self.state[(self.stock_dim+1):(self.stock_dim*2+1)]))- self.initial_amount ))
+            print("total_reward: {}".format(self.state[0]+sum(np.array(self.state[1:(self.stock_dim+1)])*np.array(self.state[(self.stock_dim+1):(self.stock_dim*2+1)]))- self.initial_amount ))
             print("total_cost: ", self.cost)
             print("total_trades: ", self.trades)
             df_total_value.columns = ['account_value']
             df_total_value['daily_return']=df_total_value.pct_change(1)
             if df_total_value['daily_return'].std() !=0:
-              sharpe = (252**0.5)*df_total_value['daily_return'].mean()/ \
-                    df_total_value['daily_return'].std()
+              sharpe = ((252**0.5)*df_total_value['daily_return'].mean() / df_total_value['daily_return'].std()) or 0
               print("Sharpe: ",sharpe)
               print("=================================")
             df_rewards = pd.DataFrame(self.rewards_memory)
@@ -207,7 +206,7 @@ class SingleStockEnv(gym.Env):
                 self._buy_stock(index, actions[index])
 
             self.day += 1
-            self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
+            self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index() if self.sample_space > 1 else self.df.loc[self.day,:]
             #load next state
             # print("stock_shares:{}".format(self.state[29:]))
             self.state =  [self.state[0]] + \
@@ -241,7 +240,7 @@ class SingleStockEnv(gym.Env):
         self.sample_tics = self.df['tic'].sample(n=self.sample_space).tolist()
         self.asset_memory = [self.initial_amount]
         self.day = 0
-        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
+        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index() if self.sample_space > 1 else self.df.loc[self.day,:]
         self.cost = 0
         self.trades = 0
         self.terminal = False 

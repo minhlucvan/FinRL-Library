@@ -133,11 +133,11 @@ class DRLAgent:
                     learning_starts=model_params['learning_starts'],
                     ent_coef=model_params['ent_coef'],
                     verbose=model_params['verbose'],
-                    tensorboard_log = f"{config.TENSORBOARD_LOG_DIR}/{model_name}"
+                    tensorboard_log = f"{config.TENSORBOARD_LOG_DIR}/{model_name}.zip"
                     )
 
-        model.load(path=f"{config.TRAINED_MODEL_DIR}/{model_name}")
-        print('Loaded model (SAC): {}'.format(model_name))
+        model.load(path=f"{config.TRAINED_MODEL_DIR}/{model_name}.zip")
+        print('Loaded model (SAC): {}.zip'.format(model_name))
         return model
 
     def train_SAC(self, model_name, model_params = config.SAC_PARAMS):

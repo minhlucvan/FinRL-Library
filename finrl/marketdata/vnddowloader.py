@@ -61,6 +61,8 @@ class VndDownloader:
         
         stocks_df['listedDate'] = stocks_df['listedDate'].apply(date_to_str)
 
+        stocks_df.replace(to_replace=[r"\\t|\\n|\\r", "\t|\n|\r"], value=["",""], regex=True, inplace=True)
+
         stocks_df.to_csv(stocks_data_file, index=False, encoding='utf-8')
         print('saved stocks data to {}'.format(stocks_data_file))
 
@@ -122,7 +124,7 @@ class VndDownloader:
         print('load stocks data from {}'.format(stocks_data_file))
         price_df = pd.DataFrame([])
         stocks_df = pd.read_csv(stocks_data_file)
-
+        stocks_df['listedDate'] = pd.to_numeric(stocks_df['listedDate'])
         qualified_stocks_df = stocks_df.query('listedDate <= 20090101').query('status == "listed"')
 
         print('all stocks {}'.format(qualified_stocks_df['code'].count()))

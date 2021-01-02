@@ -50,7 +50,7 @@ class StockEnvTrade(gym.Env):
         # +[macd 1-30]+ [rsi 1-30] + [cci 1-30] + [adx 1-30]
         self.observation_space = spaces.Box(low=0, high=np.inf, shape = (self.state_space,))
         # load data from a pandas dataframe
-        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
+        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index() if self.sample_space > 1 else self.df.loc[self.day,:]
         self.terminal = False     
         self.turbulence_threshold = turbulence_threshold
         # initalize state
@@ -144,8 +144,7 @@ class StockEnvTrade(gym.Env):
 
             df_total_value.columns = ['account_value']
             df_total_value['daily_return']=df_total_value.pct_change(1)
-            sharpe = (252**0.5)*df_total_value['daily_return'].mean()/ \
-                  df_total_value['daily_return'].std()
+            sharpe = ((252**0.5)*df_total_value['daily_return'].mean() / df_total_value['daily_return'].std()) or 0
             print("Sharpe: ",sharpe)
             
             #df_rewards = pd.DataFrame(self.rewards_memory)
@@ -180,7 +179,7 @@ class StockEnvTrade(gym.Env):
                 self._buy_stock(index, actions[index])
 
             self.day += 1
-            self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
+            self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index() if self.sample_space > 1 else self.df.loc[self.day,:]
             self.turbulence = self.data['turbulence'].values[0]
             #print(self.turbulence)
             #load next state
@@ -209,7 +208,7 @@ class StockEnvTrade(gym.Env):
         self.sample_tics = self.df['tic'].sample(n=self.sample_space).tolist()
         self.asset_memory = [self.initial_amount]
         self.day = 0
-        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
+        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index() if self.sample_space > 1 else self.df.loc[self.day,:]
         self.turbulence = 0
         self.cost = 0
         self.trades = 0

@@ -14,7 +14,7 @@ from finrl.env.environment import EnvSetup
 from finrl.env.EnvMultipleStock_train import StockEnvTrain
 from finrl.env.EnvMultipleStock_trade import StockEnvTrade
 from finrl.model.models import DRLAgent
-from finrl.trade.backtest import BackTestStats, BackTestPlot, BaselineStats
+from finrl.autotrain.backtesting import backtest
 
 DataDowloader = get_data_downloader(config.DATA_PROVIDER)
 
@@ -64,7 +64,13 @@ def train_one():
     # calculate state action space
     # stock_dimension = len(train.tic.unique())
     stock_dimension = config.NUMBER_SAMPLE_STOCKS
-    state_space = 1 + 2*stock_dimension + len(config.TECHNICAL_INDICATORS_LIST)*stock_dimension 
+    stock_data_dimension = len(config.STOCK_DATA_COLUMNS)
+    tech_indicators_dimension = len(config.TECHNICAL_INDICATORS_LIST)
+    user_defined_dimension = len(config.STOCK_USER_DEFINED_COLUMNS)
+    state_space = 1 + (1 + user_defined_dimension + tech_indicators_dimension + stock_data_dimension)*stock_dimension
+
+    print('Stock dimension: {}'.format(stock_dimension))
+    print('State dimension {}'.format(state_space))
     
     env_setup = EnvSetup(stock_dim = stock_dimension,
                          population_space = config.NUMBER_OF_STOCKS,
@@ -85,37 +91,29 @@ def train_one():
     print("Using Model {}".format(config.ENABLED_MODEL))
     now = datetime.datetime.now().strftime('%Y%m%d-%Hh%M')
     model_params_tuning=config.SAC_PARAMS
-    model = agent.train_SAC(model_name = "SAC_{}".format(now), model_params = model_params_tuning)
+    model_name = "SAC_{}".format(now)
+    model = agent.train_SAC(model_name = model_name, model_params = model_params_tuning)
 
     if config.ENABLED_MODEL == 'ppo':
         model_params_tuning=config.PPO_PARAMS
-        model = agent.train_PPO(model_name = "PPO_{}".format(now), model_params = model_params_tuning)
+        model_name = "PPO_{}".format(now)
+        model = agent.train_PPO(model_name=model_name, model_params = model_params_tuning)
     
     if config.ENABLED_MODEL == 'a2c':
         model_params_tuning=config.A2C_PARAMS
-        model = agent.train_A2C(model_name = "A2C_{}".format(now), model_params = model_params_tuning)
+        model_name = "A2C_{}".format(now)
+        model = agent.train_A2C(model_name=model_name, model_params = model_params_tuning)
     
     if config.ENABLED_MODEL == 'ddpg':
         model_params_tuning=config.DDPG_PARAMS
-        model = agent.train_DDPG(model_name = "DDPG_{}".format(now), model_params = model_params_tuning)
+        model_name = "DDPG_{}".format(now)
+        model = agent.train_DDPG(model_name=model_name, model_params = model_params_tuning)
     
     if config.ENABLED_MODEL == 'td3':
         model_params_tuning=config.TD3_PARAMS
-        model = agent.train_TD3(model_name = "TD3_{}".format(now), model_params = model_params_tuning)
+        model_name = "TD3_{}".format(now)
+        model = agent.train_TD3(model_name=model_name, model_params = model_params_tuning)
 
-    print("==============Start Trading===========")
-    env_trade, obs_trade = env_setup.create_env_trading(data = trade,
-                                         env_class = trade_env_class,
-                                         turbulence_threshold=config.TURBULENCE_THRESHOLD) 
-
-    df_account_value,df_actions = DRLAgent.DRL_prediction(model=model,
-                                                          test_data = trade,
-                                                          test_env = env_trade,
-                                                          test_obs = obs_trade)
-    df_account_value.to_csv("./"+config.RESULTS_DIR+"/df_account_value_"+now+'.csv')
-    df_actions.to_csv("./"+config.RESULTS_DIR+"/df_actions_"+now+'.csv')
-
-    print("==============Get Backtest Results===========")
-    perf_stats_all = BackTestStats(df_account_value)
-    perf_stats_all = pd.DataFrame(perf_stats_all)
-    perf_stats_all.to_csv("./"+config.RESULTS_DIR+"/perf_stats_all_"+now+'.csv')
+    print("==============Model Testing===========")
+    backtest(model_name=model_name)
+    

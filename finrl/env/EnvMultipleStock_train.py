@@ -52,7 +52,7 @@ class StockEnvTrain(gym.Env):
         # +[macd 1-30]+ [rsi 1-30] + [cci 1-30] + [adx 1-30]
         self.observation_space = spaces.Box(low=0, high=np.inf, shape = (self.state_space,))
         # load data from a pandas dataframe
-        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
+        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index() if self.sample_space > 1 else self.df.loc[self.day,:]
         # self.data.to_csv('debug.csv')
         self.terminal = False             
         # initalize state
@@ -124,7 +124,7 @@ class StockEnvTrain(gym.Env):
             df_total_value.columns = ['account_value']
             df_total_value['daily_return']=df_total_value.pct_change(1)
             daily_return_std = df_total_value['daily_return'].std()
-            sharpe = (252**0.5)*df_total_value['daily_return'].mean()/ daily_return_std if daily_return_std != 0 else 0
+            sharpe = ((252**0.5)*df_total_value['daily_return'].mean()/ daily_return_std) or 0
             print("Sharpe: ",sharpe)
             print("=================================")
             # df_rewards = pd.DataFrame(self.rewards_memory)
@@ -160,7 +160,7 @@ class StockEnvTrain(gym.Env):
                 self._buy_stock(index, actions[index])
 
             self.day += 1
-            self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
+            self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index() if self.sample_space > 1 else self.df.loc[self.day,:]
             #load next state
             # print("stock_shares:{}".format(self.state[29:]))
             self.state =  [self.state[0]] + \
@@ -187,7 +187,7 @@ class StockEnvTrain(gym.Env):
         self.sample_tics = self.df['tic'].sample(n=self.sample_space).tolist()
         self.asset_memory = [self.initial_amount]
         self.day = 0
-        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index()
+        self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index() if self.sample_space > 1 else self.df.loc[self.day,:]
         self.cost = 0
         self.trades = 0
         self.terminal = False 

@@ -3,9 +3,11 @@ from backtesting.test import SMA
 from backtesting.lib import SignalStrategy, TrailingStrategy
 
 
-class SmaCross(SignalStrategy,
+class SimulatedBackTestStrategy(SignalStrategy,
                TrailingStrategy):
-
+    n1 = 10
+    n2 = 25
+    
     def init(self):
         # In init() and in next() it is important to call the
         # super method to properly initialize the parent classes
