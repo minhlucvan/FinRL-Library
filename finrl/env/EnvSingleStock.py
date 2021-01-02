@@ -71,6 +71,7 @@ class SingleStockEnv(gym.Env):
                 action_space,
                 tech_indicator_list,
                 turbulence_threshold,
+                iteration=0,
                 day = 0):
         #super(StockEnv, self).__init__()
         #money = 10 , scope = 1
@@ -88,6 +89,7 @@ class SingleStockEnv(gym.Env):
         self.state_space = state_space
         self.action_space = action_space
         self.tech_indicator_list = tech_indicator_list
+        self.iteration = iteration
 
         # action_space normalization and shape is self.stock_dim
         self.action_space = spaces.Box(low = -1, high = 1,shape = (self.action_space,)) 
@@ -165,7 +167,7 @@ class SingleStockEnv(gym.Env):
             #plt.close()
             end_total_asset = self.state[0]+ \
                 sum(np.array(self.state[1:(self.stock_dim+1)])*np.array(self.state[(self.stock_dim+1):(self.stock_dim*2+1)]))
-
+            print("iteration result :{}".format(self.iteration))  
             print("begin_total_asset:{}".format(self.asset_memory[0]))           
             print("end_total_asset:{}".format(end_total_asset))
             df_total_value = pd.DataFrame(self.asset_memory)
@@ -249,6 +251,7 @@ class SingleStockEnv(gym.Env):
         self.rewards_memory = []
         self.actions_memory=[]
         self.date_memory=[self.data.date]
+        self.iteration += 1 
         #initiate state
         self.state = [self.initial_amount] + \
                       [self.data.close] + \
