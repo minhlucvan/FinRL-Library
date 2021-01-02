@@ -15,6 +15,8 @@ from finrl.env.EnvMultipleStock_train import StockEnvTrain
 from finrl.env.EnvMultipleStock_trade import StockEnvTrade
 from finrl.model.models import DRLAgent
 from finrl.autotrain.backtesting import backtest
+from finrl.env.EnvSingleStock import SingleStockEnv
+from finrl.env.EnvPortfolio import StockPortfolioEnv
 
 DataDowloader = get_data_downloader(config.DATA_PROVIDER)
 
@@ -54,12 +56,12 @@ def train_one():
     trade_env_class = StockEnvTrade
 
     if config.TRADING_POLICY == 'SINGLE_STOCK':
-        train_env_class = StockEnvTrain
-        trade_env_class = StockEnvTrade
+        train_env_class = SingleStockEnv
+        trade_env_class = SingleStockEnv
     
     if config.TRADING_POLICY == 'SINGLE_PORFOLIO':
-        train_env_class = StockEnvTrain
-        trade_env_class = StockEnvTrade
+        train_env_class = StockPortfolioEnv
+        trade_env_class = StockPortfolioEnv
 
     # calculate state action space
     # stock_dimension = len(train.tic.unique())
