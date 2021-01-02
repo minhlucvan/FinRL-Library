@@ -137,3 +137,5 @@ dmypy.json
 
 datasets/
 results/
+trained_models/
+tensorboard_log/
