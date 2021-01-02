@@ -60,8 +60,6 @@ def BackTestPlot(account_value,
     df['date'] = bli['date']
     
     DRL_strat = backtest_strat(df)
-    print(DRL_strat)
-    print(dow_strat)
     with pyfolio.plotting.plotting_context(font_scale=1.1):
         pyfolio.create_full_tear_sheet(returns = DRL_strat, benchmark_rets=dow_strat, set_context=False)
 

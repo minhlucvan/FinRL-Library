@@ -122,14 +122,16 @@ class SingleStockEnv(gym.Env):
 
     def _sell_stock(self, index, action):
         # perform sell action based on the sign of the action
-        if self.state[index+self.stock_dim+1] > 0:
+        available_amount = self.state[index+self.stock_dim+1]
+        action_amount = action * available_amount
+        if  available_amount > 0:
             #update balance
             self.state[0] += \
-            self.state[index+1]*min(abs(action),self.state[index+self.stock_dim+1]) * \
+            self.state[index+1]*min(abs(action_amount),self.state[index+self.stock_dim+1]) * \
              (1- self.transaction_cost_pct)
 
-            self.state[index+self.stock_dim+1] -= min(abs(action), self.state[index+self.stock_dim+1])
-            self.cost +=self.state[index+1]*min(abs(action),self.state[index+self.stock_dim+1]) * \
+            self.state[index+self.stock_dim+1] -= min(abs(action_amount), self.state[index+self.stock_dim+1])
+            self.cost +=self.state[index+1]*min(abs(action_amount),self.state[index+self.stock_dim+1]) * \
              self.transaction_cost_pct
             self.trades+=1
         else:
@@ -139,15 +141,16 @@ class SingleStockEnv(gym.Env):
     def _buy_stock(self, index, action):
         # perform buy action based on the sign of the action
         available_amount = self.state[0] // self.state[index+1]
+        action_amount = action * available_amount
         # print('available_amount:{}'.format(available_amount))
 
         #update balance
-        self.state[0] -= self.state[index+1]*min(available_amount, action)* \
+        self.state[0] -= self.state[index+1]*min(available_amount, action_amount)* \
                           (1+ self.transaction_cost_pct)
 
-        self.state[index+self.stock_dim+1] += min(available_amount, action)
+        self.state[index+self.stock_dim+1] += min(available_amount, action_amount)
 
-        self.cost+=self.state[index+1]*min(available_amount, action)* \
+        self.cost+=self.state[index+1]*min(available_amount, action_amount)* \
                           self.transaction_cost_pct
         self.trades+=1
         
