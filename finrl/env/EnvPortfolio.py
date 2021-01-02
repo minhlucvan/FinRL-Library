@@ -141,7 +141,7 @@ class StockPortfolioEnv(gym.Env):
             df_daily_return = pd.DataFrame(self.portfolio_return_memory)
             df_daily_return.columns = ['daily_return']
             if df_daily_return['daily_return'].std() !=0:
-              sharpe = ((252**0.5)*df_daily_return['daily_return'].mean() / df_daily_return['daily_return'].std()) or 0 
+              sharpe = ((252**0.5)*df_daily_return['daily_return'].mean() / df_daily_return['daily_return'].std()) if df_total_value['daily_return'].std() != 0 else 0 
               print("Sharpe: ",sharpe)
             print("=================================")
             

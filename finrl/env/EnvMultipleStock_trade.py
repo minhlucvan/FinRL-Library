@@ -144,7 +144,7 @@ class StockEnvTrade(gym.Env):
 
             df_total_value.columns = ['account_value']
             df_total_value['daily_return']=df_total_value.pct_change(1)
-            sharpe = ((252**0.5)*df_total_value['daily_return'].mean() / df_total_value['daily_return'].std()) or 0
+            sharpe = ((252**0.5)*df_total_value['daily_return'].mean() / df_total_value['daily_return'].std()) if df_total_value['daily_return'].std() != 0 else 0
             print("Sharpe: ",sharpe)
             
             #df_rewards = pd.DataFrame(self.rewards_memory)

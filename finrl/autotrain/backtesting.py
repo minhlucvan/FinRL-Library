@@ -147,4 +147,4 @@ def backtest(model_name=config.SAVED_MODEL):
     bt.plot(filename="./{}/{}/back_testing_viz.html".format(config.RESULTS_DIR, model_name), open_browser=False)
 
     plt.plot()
-    plt.savefig(fname="./{}/{}/back_testing_full.html".format(config.RESULTS_DIR, model_name), open_browser=False)
+    plt.savefig(fname="./{}/{}/back_testing_full.pdf".format(config.RESULTS_DIR, model_name))

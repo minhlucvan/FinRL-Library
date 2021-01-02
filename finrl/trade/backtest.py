@@ -56,22 +56,20 @@ def BackTestPlot(account_value,
     bli, dow_strat = baseline_strat(ticker = baseline_ticker, 
                                     start = baseline_start, 
                                     end = baseline_end)      
-    df.reset_index(inplace=True, drop = True)              
-    bli.reset_index(inplace=True, drop = True)   
     
     df['date'] = bli['date']
     
     DRL_strat = backtest_strat(df)
+    print(DRL_strat)
+    print(dow_strat)
     with pyfolio.plotting.plotting_context(font_scale=1.1):
-        pyfolio.create_full_tear_sheet(returns = DRL_strat,
-                                       benchmark_rets=dow_strat, set_context=False)
+        pyfolio.create_full_tear_sheet(returns = DRL_strat, benchmark_rets=dow_strat, set_context=False)
 
 def backtest_strat(df):
     strategy_ret= df.copy()
     strategy_ret['date'] = pd.to_datetime(strategy_ret['date'])
-    strategy_ret.set_index('date', drop = False, inplace = True)
+    strategy_ret.set_index('date', drop = True, inplace = True)
     strategy_ret.index = strategy_ret.index.tz_localize('UTC')
-    del strategy_ret['date']
     ts = pd.Series(strategy_ret['daily_return'].values, index=strategy_ret.index)
     ts = ts.fillna(0.0)
     return ts.head(n=479)
@@ -88,7 +86,7 @@ def baseline_strat(ticker, start, end):
 def get_daily_return(df):
     df['daily_return']=df.account_value.pct_change(1)
     df=df.fillna(0.0)
-    sharpe = ((252**0.5)*df['daily_return'].mean() / df['daily_return'].std()) or 0
+    sharpe = ((252**0.5)*df['daily_return'].mean() / df['daily_return'].std()) if  df['daily_return'].std() != 0 else 0
     annual_return = ((df['daily_return'].mean()+1)**252-1)*100
     print("annual return: ", annual_return)
     print("sharpe ratio: ", sharpe)    
