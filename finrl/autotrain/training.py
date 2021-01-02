@@ -24,17 +24,24 @@ def train_one():
     """
     train an agent
     """
-    print("==============Start Fetching Data===========")
-    df = DataDowloader(start_date = config.START_DATE,
-                         end_date = config.END_DATE,
-                         ticker_list = config.TICKER_LIST).fetch_data()
-    print("==============Start Feature Engineering===========")
-    df = FeatureEngineer(df,
+    
+    if not os.path.exists(config.TRAINING_DATA_FILE):
+        print("==============Start Fetching Data===========")
+        df = DataDowloader(start_date = config.START_DATE,
+                            end_date = config.END_DATE,
+                            ticker_list = config.TICKER_LIST).fetch_data()
+        print("==============Start Feature Engineering===========")
+        df = FeatureEngineer(df,
                         use_technical_indicator=config.USE_TECHNICAL_INDICATOR,
                         user_defined_feature=config.USER_DEFINED_FEATURE,
                         use_turbulence=config.USE_TURBULENCE).preprocess_data()
 
-    df.to_csv(config.TRAINING_DATA_FILE)
+        df.to_csv(config.TRAINING_DATA_FILE)
+    else:
+        print("==============Using Saved Data===========")
+        df = pd.read_csv(config.TRAINING_DATA_FILE)
+        selected_stocks = df.tic.unique()
+        print('Selected tocks: {}'.format(', '.join(selected_stocks)))
 
     # Training & Trade data split
     train = data_split(df, config.START_DATE,config.START_TRADE_DATE)
