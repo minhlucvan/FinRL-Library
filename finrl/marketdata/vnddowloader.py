@@ -114,7 +114,7 @@ class VndDownloader:
             current_start_time = current_end_time
             current_end_time = min(current_start_time + period_length, end_time)
             period_df =  self.get_stock_price_part(stock_code, current_start_time, current_end_time)
-            full_df = pd.concat([full_df, period_df])
+            full_df = pd.concat([full_df, period_df], ignore_index=True)
 
         filterled_df = full_df.drop_duplicates()
 

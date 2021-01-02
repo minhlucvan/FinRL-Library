@@ -116,7 +116,6 @@ def backtest(model_name=config.SAVED_MODEL):
                                                           test_env = env_trade,
                                                           test_obs = obs_trade)
 
-
     perf_stats_all = BackTestStats(df_account_value)
     perf_stats_all = pd.DataFrame(perf_stats_all)
     perf_stats_all.to_csv("./{}/{}/perf_stats_all.csv".format(config.RESULTS_DIR, model_name))
