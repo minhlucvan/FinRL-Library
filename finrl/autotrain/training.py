@@ -24,7 +24,7 @@ def train_one():
     """
     train an agent
     """
-    
+
     if not os.path.exists(config.TRAINING_DATA_FILE):
         print("==============Start Fetching Data===========")
         df = DataDowloader(start_date = config.START_DATE,
@@ -91,7 +91,8 @@ def train_one():
                          transaction_cost_pct = config.TRANSACTION_COST_PCT)
 
     env_train = env_setup.create_env_training(data = train,
-                                          env_class = train_env_class)
+                                          env_class = train_env_class,
+                                          turbulence_threshold=config.TURBULENCE_THRESHOLD)
     agent = DRLAgent(env = env_train)
 
 
