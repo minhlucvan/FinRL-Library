@@ -75,7 +75,7 @@ def train_one():
     stock_dimension = config.NUMBER_SAMPLE_STOCKS
     stock_data_dimension = len(config.STOCK_DATA_COLUMNS)
     tech_indicators_dimension = len(config.TECHNICAL_INDICATORS_LIST)
-    user_defined_dimension = len(config.STOCK_USER_DEFINED_COLUMNS)
+    user_defined_dimension = len(config.STOCK_USER_DEFINED_COLUMNS) if config.USER_DEFINED_FEATURE else 0
     state_space = 1 + (1 + user_defined_dimension + tech_indicators_dimension + stock_data_dimension)*stock_dimension
 
     print('Stock dimension: {}'.format(stock_dimension))

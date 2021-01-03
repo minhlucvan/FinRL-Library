@@ -95,7 +95,7 @@ class SingleStockEnv(gym.Env):
         self.action_space = spaces.Box(low = -1, high = 1,shape = (self.action_space,)) 
         # Shape = 181: [Current Balance]+[prices 1-30]+[owned shares 1-30] 
         # +[macd 1-30]+ [rsi 1-30] + [cci 1-30] + [adx 1-30]
-        self.observation_space = spaces.Box(low=0, high=np.inf, shape = (self.state_space,))
+        self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape = (self.state_space,))
         # load data from a pandas dataframe
         self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index() if self.sample_space > 1 else self.df.loc[self.day,:]
         self.terminal = False     
@@ -124,17 +124,16 @@ class SingleStockEnv(gym.Env):
 
     def _sell_stock(self, index, action):
         # perform sell action based on the sign of the action
-        available_amount = self.state[index+self.stock_dim+1]
+        available_amount = self.state[2]
         action_amount = action * available_amount
         if  available_amount > 0:
             #update balance
-            self.state[0] += \
-            self.state[index+1]*min(abs(action_amount),self.state[index+self.stock_dim+1]) * \
-             (1- self.transaction_cost_pct)
+            allowance_amount = min(abs(action_amount),self.state[index+self.stock_dim+1])
+            transaction_amount = self.state[index+1]*allowance_amount
+            self.state[0] += transaction_amount *  (1- self.transaction_cost_pct)
 
-            self.state[index+self.stock_dim+1] -= min(abs(action_amount), self.state[index+self.stock_dim+1])
-            self.cost +=self.state[index+1]*min(abs(action_amount),self.state[index+self.stock_dim+1]) * \
-             self.transaction_cost_pct
+            self.state[index+self.stock_dim+1] -= allowance_amount
+            self.cost +=self.state[index+1]*allowance_amount * self.transaction_cost_pct
             self.trades+=1
         else:
             pass
@@ -147,32 +146,29 @@ class SingleStockEnv(gym.Env):
         # print('available_amount:{}'.format(available_amount))
 
         #update balance
-        self.state[0] -= self.state[index+1]*min(available_amount, action_amount)* \
-                          (1+ self.transaction_cost_pct)
+        self.state[0] -= self.state[index+1]*min(available_amount, action_amount)*  (1+ self.transaction_cost_pct)
 
         self.state[index+self.stock_dim+1] += min(available_amount, action_amount)
 
-        self.cost+=self.state[index+1]*min(available_amount, action_amount)* \
-                          self.transaction_cost_pct
+        self.cost+=self.state[index+1]*min(available_amount, action_amount)* self.transaction_cost_pct
         self.trades+=1
         
     def step(self, actions):
         # print(self.day)
-        self.terminal = self.day >= len(self.df.index.unique())-1
         # print(actions)
+        self.terminal = self.day >= len(self.df.index.unique())-1
 
         if self.terminal:
-            #plt.plot(self.asset_memory,'r')
-            #plt.savefig('results/account_value_train.png')
-            #plt.close()
-            end_total_asset = self.state[0]+ \
-                sum(np.array(self.state[1:(self.stock_dim+1)])*np.array(self.state[(self.stock_dim+1):(self.stock_dim*2+1)]))
+            plt.plot(self.asset_memory,'r')
+            plt.savefig('results/account_value_train.png')
+            plt.close()
+            end_total_asset = self.state[0]+ self.state[1] * self.state[2]
             print("iteration result :{}".format(self.iteration))  
             print("begin_total_asset:{}".format(self.asset_memory[0]))           
             print("end_total_asset:{}".format(end_total_asset))
             df_total_value = pd.DataFrame(self.asset_memory)
             #df_total_value.to_csv('results/account_value_train.csv')
-            print("total_reward: {}".format(self.state[0]+sum(np.array(self.state[1:(self.stock_dim+1)])*np.array(self.state[(self.stock_dim+1):(self.stock_dim*2+1)]))- self.initial_amount ))
+            print("total_reward: {}".format(self.state[0]+ self.state[1] * self.state[2]- self.initial_amount ))
             print("total_cost: ", self.cost)
             print("total_trades: ", self.trades)
             df_total_value.columns = ['account_value']
@@ -187,48 +183,43 @@ class SingleStockEnv(gym.Env):
             return self.state, self.reward, self.terminal,{}
 
         else:
-            #print(actions)
+            # print(actions)
             actions = actions * self.hmax
             self.actions_memory.append(actions)
             #actions = (actions.astype(int))
             
-            begin_total_asset = self.state[0]+ \
-            sum(np.array(self.state[1:(self.stock_dim+1)])*np.array(self.state[(self.stock_dim+1):(self.stock_dim*2+1)]))
-            #print("begin_total_asset:{}".format(begin_total_asset))
+            begin_total_asset = self.state[0] + self.state[1]*self.state[2]
+            # print("begin_total_asset:{}".format(begin_total_asset))
             
             argsort_actions = np.argsort(actions)
             
-            sell_index = argsort_actions[:np.where(actions < 0)[0].shape[0]]
-            buy_index = argsort_actions[::-1][:np.where(actions > 0)[0].shape[0]]
-
-            for index in sell_index:
+            if actions[0] < 0:
                 # print('take sell action'.format(actions[index]))
-                self._sell_stock(index, actions[index])
+                self._sell_stock(0, actions[0])
 
-            for index in buy_index:
+            if actions[0] > 0:
                 # print('take buy action: {}'.format(actions[index]))
-                self._buy_stock(index, actions[index])
+                self._buy_stock(0, actions[0])
 
             self.day += 1
             self.data = self.df.loc[self.day,:].set_index('tic').loc[self.sample_tics].reset_index() if self.sample_space > 1 else self.df.loc[self.day,:]
             #load next state
-            # print("stock_shares:{}".format(self.state[29:]))
+            # print("stock_shares:{}".format(self.state))
             self.state =  [self.state[0]] + \
                     [self.data.close] + \
-                    list(self.state[(self.stock_dim+1):(self.stock_dim*2+1)]) + \
+                    [self.state[2]] + \
                       sum([[self.data[tech]] for tech in self.tech_indicator_list ], [])+ \
                       [self.data.open] + \
                       [self.data.high] + \
                       [self.data.low] +\
                       [self.data.daily_return] 
             
-            end_total_asset = self.state[0]+ \
-            sum(np.array(self.state[1:(self.stock_dim+1)])*np.array(self.state[(self.stock_dim+1):(self.stock_dim*2+1)]))
+            end_total_asset = self.state[0]+ self.state[1] *self.state[2]
             self.asset_memory.append(end_total_asset)
             self.date_memory.append(self.data.date)
             self.close_price_memory.append(self.data.close)
 
-            #print("end_total_asset:{}".format(end_total_asset))
+            # print("end_total_asset:{}".format(end_total_asset))
             
             self.reward = end_total_asset - begin_total_asset            
             # print("step_reward:{}".format(self.reward))

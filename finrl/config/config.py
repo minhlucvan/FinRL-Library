@@ -38,12 +38,13 @@ END_DATE = "2020-12-01"
 START_TRADE_DATE = "2019-01-01"
 
 ## dataset default columns
-STOCK_DATA_COLUMNS = ['close', 'open', 'high', 'low']
+# STOCK_DATA_COLUMNS = ['close', 'open', 'high', 'low']
+STOCK_DATA_COLUMNS = ['close']
 STOCK_USER_DEFINED_COLUMNS = ['daily_return']
 USE_TECHNICAL_INDICATOR=True
-USER_DEFINED_FEATURE=True
+USER_DEFINED_FEATURE=False
 USE_TURBULENCE=True
-MAXIMUM_STOCKS_PER_COMMIT = 1
+MAXIMUM_STOCKS_PER_COMMIT = 100
 STOCKS_PER_BATCH = 100
 INITIAL_AMMOUNT = 10000
 TRANSACTION_COST_PCT = 0.001
@@ -58,9 +59,9 @@ DATA_PROVIDER = 'vnd'
 LOAD_SAVED_MODEL = True
 SAVED_MODEL = 'SAC_20210102-15h08'
 
-TRADING_POLICY = 'SINGLE_STOCK' # MUTIPLE_STOCKS SINGLE_STOCK SINGLE_PORFOLIO
-NUMBER_OF_STOCKS = 1
-NUMBER_SAMPLE_STOCKS = 1
+TRADING_POLICY = 'MUTIPLE_STOCKS' # MUTIPLE_STOCKS SINGLE_STOCK SINGLE_PORFOLIO
+NUMBER_OF_STOCKS = 3
+NUMBER_SAMPLE_STOCKS = 3
 
 ## Model Parameters
 A2C_PARAMS = {'n_steps':5, 
@@ -231,7 +232,7 @@ CSI_300_TICKER = ['600000.SS', '600004.SS', '600009.SS', '600010.SS', '600011.SS
 
 VN_HOSE = ['FPT', 'HPG', 'SSI']
 
-TICKER_LIST = SINGLE_TICKER
+TICKER_LIST = MULTIPLE_STOCK_TICKER
 
 ############## Stock Ticker Setup ends ##############
 ########################################################
@@ -239,86 +240,87 @@ TICKER_LIST = SINGLE_TICKER
 ## stockstats technical indicator column names
 ## check https://github.com/bukosabino/ta for different names
 TECHNICAL_INDICATORS_LIST = [
-	'volume_adi',
-	'volume_obv',
-	'volume_cmf',
-	'volume_fi',
-	'volume_mfi',
-	'volume_em',
-	'volume_sma_em',
-	'volume_vpt',
-	'volume_nvi',
-	'volume_vwap',
-	'volatility_atr',
-	'volatility_bbm',
-	'volatility_bbh',
-	'volatility_bbl',
-	'volatility_bbw',
-	'volatility_bbp',
-	'volatility_bbhi',
-	'volatility_bbli',
-	'volatility_kcc',
-	'volatility_kch',
-	'volatility_kcl',
-	'volatility_kcw',
-	'volatility_kcp',
-	'volatility_kchi',
-	'volatility_kcli',
-	'volatility_dcl',
-	'volatility_dch',
-	'volatility_dcm',
-	'volatility_dcw',
-	'volatility_dcp',
-	'volatility_ui',
+	# 'volume_adi',
+	# 'volume_obv',
+	# 'volume_cmf',
+	# 'volume_fi',
+	# 'volume_mfi',
+	# 'volume_em',
+	# 'volume_sma_em',
+	# 'volume_vpt',
+	# 'volume_nvi',
+	# 'volume_vwap',
+	# 'volatility_atr',
+	# 'volatility_bbm',
+	# 'volatility_bbh',
+	# 'volatility_bbl',
+	# 'volatility_bbw',
+	# 'volatility_bbp',
+	# 'volatility_bbhi',
+	# 'volatility_bbli',
+	# 'volatility_kcc',
+	# 'volatility_kch',
+	# 'volatility_kcl',
+	# 'volatility_kcw',
+	# 'volatility_kcp',
+	# 'volatility_kchi',
+	# 'volatility_kcli',
+	# 'volatility_dcl',
+	# 'volatility_dch',
+	# 'volatility_dcm',
+	# 'volatility_dcw',
+	# 'volatility_dcp',
+	# 'volatility_ui',
 	'trend_macd',
-	'trend_macd_signal',
-	'trend_macd_diff',
-	'trend_sma_fast',
-	'trend_sma_slow',
-	'trend_ema_fast',
-	'trend_ema_slow',
+	# 'trend_macd_signal',
+	# 'trend_macd_diff',
+	# 'trend_sma_fast',
+	# 'trend_sma_slow',
+	# 'trend_ema_fast',
+	# 'trend_ema_slow',
 	'trend_adx',
-	'trend_adx_pos',
-	'trend_adx_neg',
-	'trend_vortex_ind_pos',
-	'trend_vortex_ind_neg',
-	'trend_vortex_ind_diff',
-	'trend_trix',
-	'trend_mass_index',
+	# 'trend_adx_pos',
+	# 'trend_adx_neg',
+	# 'trend_vortex_ind_pos',
+	# 'trend_vortex_ind_neg',
+	# 'trend_vortex_ind_diff',
+	# 'trend_trix',
+	# 'trend_mass_index',
 	'trend_cci',
-	'trend_dpo',
-	'trend_kst',
-	'trend_kst_sig',
-	'trend_kst_diff',
-	'trend_ichimoku_conv',
-	'trend_ichimoku_base',
-	'trend_ichimoku_a',
-	'trend_ichimoku_b',
-	'trend_visual_ichimoku_a',
-	'trend_visual_ichimoku_b',
-	'trend_aroon_up', 
-	'trend_aroon_down',
-	'trend_aroon_ind', 
-	'trend_psar_up', 
-	'trend_psar_down', 
-	'trend_psar_up_indicator',
-	'trend_psar_down_indicator', 
-	'trend_stc', 'momentum_rsi', 
-	'momentum_stoch_rsi',
-	'momentum_stoch_rsi_k',
-	'momentum_stoch_rsi_d', 
-	'momentum_tsi',
-	'momentum_uo',
-	'momentum_stoch',
-	'momentum_stoch_signal',
-	'momentum_wr',
-	'momentum_ao',
-	'momentum_kama',
-	'momentum_roc',
-	'momentum_ppo',
-	'momentum_ppo_signal',
-	'momentum_ppo_hist', 
-	'others_dr',
-	'others_dlr', 
-	'others_cr'
+	# 'trend_dpo',
+	# 'trend_kst',
+	# 'trend_kst_sig',
+	# 'trend_kst_diff',
+	# 'trend_ichimoku_conv',
+	# 'trend_ichimoku_base',
+	# 'trend_ichimoku_a',
+	# 'trend_ichimoku_b',
+	# 'trend_visual_ichimoku_a',
+	# 'trend_visual_ichimoku_b',
+	# 'trend_aroon_up', 
+	# 'trend_aroon_down',
+	# 'trend_aroon_ind', 
+	# 'trend_psar_up', 
+	# 'trend_psar_down', 
+	# 'trend_psar_up_indicator',
+	# 'trend_psar_down_indicator', 
+	# 'trend_stc', 
+	'momentum_rsi', 
+	# 'momentum_stoch_rsi',
+	# 'momentum_stoch_rsi_k',
+	# 'momentum_stoch_rsi_d', 
+	# 'momentum_tsi',
+	# 'momentum_uo',
+	# 'momentum_stoch',
+	# 'momentum_stoch_signal',
+	# 'momentum_wr',
+	# 'momentum_ao',
+	# 'momentum_kama',
+	# 'momentum_roc',
+	# 'momentum_ppo',
+	# 'momentum_ppo_signal',
+	# 'momentum_ppo_hist', 
+	# 'others_dr',
+	# 'others_dlr', 
+	# 'others_cr'
 ] 
