@@ -222,8 +222,8 @@ class StockEnvTrade(gym.Env):
                       self.data.close.values.tolist() + \
                       [0]*self.stock_dim + \
                       sum([self.data[tech].values.tolist() for tech in self.tech_indicator_list ], [])
+        print(self.state)
 
-            
         return self.state
     
     def render(self, mode='human',close=False):

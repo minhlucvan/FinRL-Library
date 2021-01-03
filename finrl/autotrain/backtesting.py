@@ -82,9 +82,9 @@ def backtest(model_name=config.SAVED_MODEL):
     stock_dimension = config.NUMBER_SAMPLE_STOCKS
     stock_data_dimension = len(config.STOCK_DATA_COLUMNS)
     tech_indicators_dimension = len(config.TECHNICAL_INDICATORS_LIST)
-    user_defined_dimension = len(config.STOCK_USER_DEFINED_COLUMNS)
+    user_defined_dimension = len(config.STOCK_USER_DEFINED_COLUMNS) if config.USER_DEFINED_FEATURE else 0
     state_space = 1 + (1 + user_defined_dimension + tech_indicators_dimension + stock_data_dimension)*stock_dimension
-    
+
     print('Stock dimention: {}'.format(stock_dimension))
     print('State dimention {}'.format(state_space))
 
@@ -136,15 +136,15 @@ def backtest(model_name=config.SAVED_MODEL):
     df_account_value.to_csv("./{}/{}/df_account_value.csv".format(config.RESULTS_DIR, model_name))
     df_actions.to_csv("./{}/{}/df_actions.csv".format(config.RESULTS_DIR, model_name))
 
-    print("==============Get Backtest Results===========")
-    combined_data = trade.set_index('date').join(df_actions.set_index('date'), rsuffix='_action').join(df_account_value.set_index('date'), rsuffix='_account')
-    combined_data = combined_data.reset_index(drop=False)
-    combined_data['date'] = pd.to_datetime(combined_data['date'])
-    combined_data = combined_data.set_index('date')
-    renamed_data = combined_data.rename(columns={'open': 'Open','close': 'Close', 'high': 'High', 'low': 'Low', 'volume': 'Volume'})
-    backtest_strategy = SimulatedBackTestStrategy
-    bt = BacktestResults(states=renamed_data, strategy=backtest_strategy)
-    bt.plot(filename="./{}/{}/back_testing_viz.html".format(config.RESULTS_DIR, model_name), open_browser=False)
-
     plt.plot()
     plt.savefig(fname="./{}/{}/back_testing_full.pdf".format(config.RESULTS_DIR, model_name))
+    if config.TRADING_POLICY == 'SINGLE_STOCK':
+        print("==============Get Backtest Results===========")
+        combined_data = trade.set_index('date').join(df_actions.set_index('date'), rsuffix='_action').join(df_account_value.set_index('date'), rsuffix='_account')
+        combined_data = combined_data.reset_index(drop=False)
+        combined_data['date'] = pd.to_datetime(combined_data['date'])
+        combined_data = combined_data.set_index('date')
+        renamed_data = combined_data.rename(columns={'open': 'Open','close': 'Close', 'high': 'High', 'low': 'Low', 'volume': 'Volume'})
+        backtest_strategy = SimulatedBackTestStrategy
+        bt = BacktestResults(states=renamed_data, strategy=backtest_strategy)
+        bt.plot(filename="./{}/{}/back_testing_viz.html".format(config.RESULTS_DIR, model_name), open_browser=False)
