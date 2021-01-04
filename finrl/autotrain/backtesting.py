@@ -95,6 +95,7 @@ def backtest(model_name=config.SAVED_MODEL):
                          hmax = config.MAXIMUM_STOCKS_PER_COMMIT,
                          hmin= config.STOCKS_PER_BATCH,
                          initial_amount = config.INITIAL_AMMOUNT,
+                         result_dir=result_dir,
                          transaction_cost_pct = config.TRANSACTION_COST_PCT)
 
     env_train = env_setup.create_env_training(data = train,
@@ -138,13 +139,15 @@ def backtest(model_name=config.SAVED_MODEL):
 
     plt.plot()
     plt.savefig(fname="./{}/{}/back_testing_full.pdf".format(config.RESULTS_DIR, model_name))
-    if config.TRADING_POLICY == 'SINGLE_STOCK':
-        print("==============Get Backtest Results===========")
-        combined_data = trade.set_index('date').join(df_actions.set_index('date'), rsuffix='_action').join(df_account_value.set_index('date'), rsuffix='_account')
-        combined_data = combined_data.reset_index(drop=False)
-        combined_data['date'] = pd.to_datetime(combined_data['date'])
-        combined_data = combined_data.set_index('date')
-        renamed_data = combined_data.rename(columns={'open': 'Open','close': 'Close', 'high': 'High', 'low': 'Low', 'volume': 'Volume'})
-        backtest_strategy = SimulatedBackTestStrategy
-        bt = BacktestResults(states=renamed_data, strategy=backtest_strategy)
-        bt.plot(filename="./{}/{}/back_testing_viz.html".format(config.RESULTS_DIR, model_name), open_browser=False)
+
+    # print("==============Get Backtest Results===========")
+    # for tic in trade.tic.unique():
+    #     tic_trade = trade.loc[trade['tic'] == tic]
+    #     combined_data = tic_trade.set_index('date').join(df_actions.set_index('date'), rsuffix='_action').join(df_account_value.set_index('date'), rsuffix='_account')
+    #     combined_data = combined_data.reset_index(drop=False)
+    #     combined_data['date'] = pd.to_datetime(combined_data['date'])
+    #     combined_data = combined_data.set_index('date')
+    #     renamed_data = combined_data.rename(columns={'open': 'Open','close': 'Close', 'high': 'High', 'low': 'Low', 'volume': 'Volume'})
+    #     backtest_strategy = SimulatedBackTestStrategy
+    #     bt = BacktestResults(states=renamed_data, strategy=backtest_strategy)
+    #     bt.plot(filename="./{}/{}/back_testing_viz.html".format(config.RESULTS_DIR, model_name), open_browser=False)

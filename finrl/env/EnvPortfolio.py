@@ -71,6 +71,7 @@ class StockPortfolioEnv(gym.Env):
                 action_space,
                 tech_indicator_list,
                 turbulence_threshold,
+                result_dir='result/',
                 lookback=252,
                 day = 0):
         #super(StockEnv, self).__init__()

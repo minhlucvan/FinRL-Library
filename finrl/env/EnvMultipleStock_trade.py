@@ -27,6 +27,7 @@ class StockEnvTrade(gym.Env):
                 action_space,
                 tech_indicator_list,
                 turbulence_threshold,
+                result_dir='result/',
                 day = 0, iteration=0):
         #super(StockEnv, self).__init__()
         #money = 10 , scope = 1
@@ -38,6 +39,7 @@ class StockEnvTrade(gym.Env):
         self.stock_dim = stock_dim
         self.hmax = hmax
         self.hmin = hmin
+        self.result_dir = result_dir
         self.initial_amount = initial_amount
         self.transaction_cost_pct =transaction_cost_pct
         self.reward_scaling = reward_scaling
@@ -128,11 +130,11 @@ class StockEnvTrade(gym.Env):
 
         if self.terminal:
             plt.plot(self.asset_memory,'r')
-            plt.savefig('results/account_value_trade_{}.png'.format(self.iteration))
+            plt.savefig('{}/account_value_trade_{}.png'.format(self.result_dir, self.iteration))
             plt.close()
 
             df_total_value = pd.DataFrame(self.asset_memory)
-            df_total_value.to_csv('results/account_value_trade_{}.csv'.format(self.iteration))
+            df_total_value.to_csv('{}/account_value_trade_{}.csv'.format(self.result_dir,self.iteration))
             end_total_asset = self.state[0]+ \
             sum(np.array(self.state[1:(self.stock_dim+1)])*np.array(self.state[(self.stock_dim+1):(self.stock_dim*2+1)]))
             print("previous_total_asset:{}".format(self.asset_memory[0]))           
@@ -222,7 +224,7 @@ class StockEnvTrade(gym.Env):
                       self.data.close.values.tolist() + \
                       [0]*self.stock_dim + \
                       sum([self.data[tech].values.tolist() for tech in self.tech_indicator_list ], [])
-        print(self.state)
+        # print(self.state)
 
         return self.state
     

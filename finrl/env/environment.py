@@ -42,8 +42,10 @@ class EnvSetup:
         initial_amount = 1000000,
         transaction_cost_pct = 0.001,
         reward_scaling = 1e-4,
+        result_dir='result/',
         tech_indicator_list = config.TECHNICAL_INDICATORS_LIST):
 
+        self.result_dir = result_dir
         self.stock_dim = sample_space
         self.hmax = hmax
         self.hmin = hmin
@@ -63,6 +65,7 @@ class EnvSetup:
                                                     stock_dim = self.stock_dim,
                                                     hmax = self.hmax,
                                                     hmin = self.hmin,
+                                                    result_dir=self.result_dir,
                                                     sample_space = self.sample_space,
                                                     population_space = self.population_space,
                                                     initial_amount = self.initial_amount,
@@ -80,6 +83,7 @@ class EnvSetup:
                                             stock_dim = self.stock_dim,
                                             hmax = self.hmax,
                                             hmin = self.hmin,
+                                            result_dir=self.result_dir,
                                             sample_space = self.sample_space,
                                             population_space = self.population_space,
                                             initial_amount = self.initial_amount,
@@ -99,6 +103,7 @@ class EnvSetup:
                                             stock_dim = self.stock_dim,
                                             hmax = self.hmax,
                                             hmin = self.hmin,
+                                            result_dir=self.result_dir,
                                             sample_space = self.sample_space,
                                             population_space = self.population_space,
                                             initial_amount = self.initial_amount,
