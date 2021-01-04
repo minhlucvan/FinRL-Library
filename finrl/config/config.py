@@ -89,6 +89,7 @@ SAC_PARAMS = {'batch_size': 128,
 			  'ent_coef':'auto_0.1',
 			  'learning_rate': 0.0001,
 			  'learning_starts':100,
+			  'timesteps': 10064,
 			  'verbose': 0}
 
 ########################################################
