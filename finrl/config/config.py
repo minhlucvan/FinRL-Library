@@ -84,13 +84,12 @@ TD3_PARAMS = {'batch_size': 100,
               'learning_rate': 0.001,
 	          'verbose':0,
 	          'timesteps':30000}
-SAC_PARAMS = {
-    "batch_size": 128,
-    "buffer_size": 100000,
-    "learning_rate": 0.0001,
-    "learning_starts": 100,
-    "ent_coef": "auto_0.1",
-}
+SAC_PARAMS = {'batch_size': 128,
+			  'buffer_size': 100000,
+			  'ent_coef':'auto_0.1',
+			  'learning_rate': 0.0001,
+			  'learning_starts':100,
+			  'verbose': 0}
 
 ########################################################
 ############## Stock Ticker Setup starts ##############
